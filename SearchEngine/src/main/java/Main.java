@@ -1,6 +1,5 @@
-package com.company;
 
-import webCrawler.WebCrawler;
+
 
 import java.util.ArrayList;
 
