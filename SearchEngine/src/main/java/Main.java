@@ -22,6 +22,8 @@ public class Main {
         ArrayList<WebCrawler> bots=new ArrayList<WebCrawler>();
         for(int i=0;i<beginingUrls.size();i++)
             bots.add(new WebCrawler(beginingUrls.get(i)));
+        ArrayList<DataStructures> SummarizedUrls=new ArrayList<DataStructures>();
+        
 //        for(WebCrawler w:bots){
 //            try {
 //                w.getThread().join();

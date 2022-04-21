@@ -21,9 +21,17 @@ public class WebCrawler implements Runnable {
     public WebCrawler(URL url) {
         System.out.println("Web Crawler is created");
         firstLink = url.getHost();
+        Connection con=Jsoup.connect(url.getHost());
+        if(con.response().statusCode()!=200){
+            return; //couldn't connect to the url
+        }
         System.out.println(firstLink);
         this.url=url;
-        //CheckRobot(url);
+        boolean x=CheckRobot(url);
+        System.out.println(x);
+        if(!x)
+            return;
+
         //ID = num;
         //thread = new Thread(this);
         //thread.start();
@@ -32,11 +40,12 @@ public class WebCrawler implements Runnable {
     @Override
     public void run() {
         // TODO Auto-generated method stub
-        CheckRobot(this.url);
+        //CheckRobot(this.url);
         crawl(1, firstLink);
     }
 
     public boolean CheckRobot(URL url){
+        System.out.println(url);
         String host=url.getHost();
         String strRobot = "http://" + host + "/robots.txt";
         URL urlRobot;
@@ -94,7 +103,6 @@ public class WebCrawler implements Runnable {
                    }
                 }
                 else if (line.startsWith("Disallow")&&useGoogleBotOnly) {
-                    System.out.println("here");
                     if (mostRecentUserAgent != null) {
                         RobotRule r = new RobotRule();
                         r.userAgent = mostRecentUserAgent;
@@ -112,7 +120,11 @@ public class WebCrawler implements Runnable {
                 System.out.println("------------------------------------");
                 String path = url.getPath();
               //  if (rw.rule == "/") return false;       // allows nothing if /
-
+                    String recentUrl="http://" + host+rw.rule;
+                    if(recentUrl.equals(rw.rule)){
+                        return false;
+                    }
+                //System.out.println("http://" + host+rw.rule);
                 if (rw.rule.length() <= path.length())
                 {
                     String pathCompare = path.substring(0, rw.rule.length());
