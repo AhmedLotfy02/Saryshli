@@ -43,3 +43,8 @@
  	 </dependency>
   </dependencies>
 ```
+
+## How to use Tom Cat 
+- go to the bin folder and open the terminal in that folder then run the `startup.sh`
+- open localhost 8080 to assure the server is working correctly.
+- the java classes should be in WEB-INF/classes.
