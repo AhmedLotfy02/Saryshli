@@ -140,6 +140,12 @@ public class WebCrawler implements Runnable {
         return true;
     }
 
+    public boolean GetCompactString(URL url){
+
+
+        return true;
+    }
+
 
     private void crawl(int level, String url) {
         if (level <= MAX_DEPTH) {
