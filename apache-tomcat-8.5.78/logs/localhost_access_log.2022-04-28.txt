@@ -1,0 +1,11 @@
+127.0.0.1 - - [28/Apr/2022:12:21:55 +0200] "GET / HTTP/1.1" 200 11156
+127.0.0.1 - - [28/Apr/2022:12:21:55 +0200] "GET /tomcat.css HTTP/1.1" 200 5542
+127.0.0.1 - - [28/Apr/2022:12:21:55 +0200] "GET /tomcat.svg HTTP/1.1" 200 67795
+127.0.0.1 - - [28/Apr/2022:12:21:55 +0200] "GET /favicon.ico HTTP/1.1" 200 21630
+127.0.0.1 - - [28/Apr/2022:12:21:55 +0200] "GET /asf-logo-wide.svg HTTP/1.1" 200 27235
+127.0.0.1 - - [28/Apr/2022:12:21:55 +0200] "GET /bg-nav.png HTTP/1.1" 200 1401
+127.0.0.1 - - [28/Apr/2022:12:21:55 +0200] "GET /bg-middle.png HTTP/1.1" 200 1918
+127.0.0.1 - - [28/Apr/2022:12:21:55 +0200] "GET /bg-upper.png HTTP/1.1" 200 3103
+127.0.0.1 - - [28/Apr/2022:12:21:55 +0200] "GET /bg-button.png HTTP/1.1" 200 713
+127.0.0.1 - - [28/Apr/2022:12:21:59 +0200] "GET /HomePage.html HTTP/1.1" 200 12841
+127.0.0.1 - - [28/Apr/2022:12:22:13 +0200] "GET /SearchSentence?SearchSentenceInput=asd&SearchInput=Search&LocationInput=Andorra HTTP/1.1" 200 55
