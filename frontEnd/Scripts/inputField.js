@@ -1,0 +1,1 @@
+document.getElementById("searchField").focus();
