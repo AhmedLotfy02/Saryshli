@@ -1,20 +1,23 @@
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
+import java.util.Hashtable;
 
 public class WebCrawler implements Runnable {
     private static final int MAX_DEPTH = 3;
     private Thread thread;
     private String firstLink;
     private ArrayList<String> visitedLinks = new ArrayList<String>();
+    private Hashtable<String, Boolean> compactStrings = new Hashtable<>();
+
     private int ID;
     private URL url;
 
@@ -27,10 +30,10 @@ public class WebCrawler implements Runnable {
 //        }
         System.out.println(firstLink);
         this.url=url;
-        boolean x=CheckRobot(url);
-        System.out.println(x);
-        if(!x)
-            return;
+//        boolean x=CheckRobot(url);
+//        System.out.println(x);
+//        if(!x)
+//            return;
 
         //ID = num;
         //thread = new Thread(this);
@@ -140,12 +143,39 @@ public class WebCrawler implements Runnable {
         return true;
     }
 
-    public boolean GetCompactString(URL url){
-
-
-        return true;
+    public boolean GetCompactString(URL url) {
+        try {
+            Document doc = Jsoup.connect(url.toString()).get();
+            Elements elements = doc.body().select("*");
+            String cs = computeCompactString(elements);
+            if(compactStrings.containsKey(cs)) return false;
+            else {
+                compactStrings.put(cs, true);
+                return true;
+            }
+        }catch(IOException e) {
+            System.out.println(e);
+        }
+        return false;
     }
 
+    /**
+     * Computing the compact string.
+     * @param elements
+     * @return String
+     * */
+    private String computeCompactString(Elements elements) {
+        Integer numOfElements = elements.size();
+        String cs = "";
+        int quantity = (int) Math.ceil(elements.size() / 4.0);
+
+        for(int i = 0; i < quantity; i++)
+            cs += elements.get(i).ownText().charAt(0);
+        for(int i = numOfElements - 1; i + quantity >= numOfElements; i--)
+            cs += elements.get(i).ownText().charAt(0);
+
+        return cs;
+    }
 
     private void crawl(int level, String url) {
         if (level <= MAX_DEPTH) {
