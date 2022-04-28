@@ -21,10 +21,10 @@ public class WebCrawler implements Runnable {
     public WebCrawler(URL url) {
         System.out.println("Web Crawler is created");
         firstLink = url.getHost();
-        Connection con=Jsoup.connect(url.getHost());
-        if(con.response().statusCode()!=200){
-            return; //couldn't connect to the url
-        }
+//        Connection con=Jsoup.connect(url.getHost());
+//        if(con.response().statusCode()!=200){
+//            return; //couldn't connect to the url
+//        }
         System.out.println(firstLink);
         this.url=url;
         boolean x=CheckRobot(url);
