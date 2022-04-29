@@ -56,7 +56,6 @@ public class Index {
             }
             processWord(start,databaseWordsFromString,weight,word);
         }
-
     }
     public void indexing(Document doc){
             Hashtable<String, ArrayList<Integer>> databaseWordsFromDocument = new Hashtable<String,ArrayList<Integer>>();
