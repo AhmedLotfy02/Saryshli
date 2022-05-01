@@ -7,11 +7,12 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 
 public class WebCrawler implements Runnable {
-    private static final int MAX_PAGES = 5000;
+    private static final int MAX_PAGES = 100;
     private static int pagesCount = 0;
     private Thread thread;
     private String firstLink;
@@ -20,8 +21,13 @@ public class WebCrawler implements Runnable {
 
     private int ID;
     private URL url;
+    private boolean validURL(String url)
+    {
+        String validEnds[] = {"com" , ""};
+        return false;
+    }
 
-    public WebCrawler(URL url) {
+    public WebCrawler(URL url , int num) {
         System.out.println("Web Crawler is created");
         firstLink = url.getHost();
 //        Connection con=Jsoup.connect(url.getHost());
@@ -36,42 +42,66 @@ public class WebCrawler implements Runnable {
 //        if(!x)
 //            return;
 
-        //ID = num;
-        //thread = new Thread(this);
-        //thread.start();
+        ID = num;
+        thread = new Thread(this);
+        thread.start();
     }
 
     @Override
     public void run() {
         // TODO Auto-generated method stub
         //CheckRobot(this.url);
-        //crawl(firstLink);
+        try {
+            System.out.println("ID : " + ID);
+            crawl(firstLink);
+        } catch (IOException e) {
+            System.out.println(ID);
+//            while(true);
+            e.printStackTrace();
+        }
     }
-
+    private void crawlNextPage(String cs , String link) throws IOException {
+        addCS(cs);
+        crawl(link);
+    }
     private void deepCrawl(Element link) throws IOException {
         String nextLink = link.absUrl("href");
         URL url = new URL(nextLink);
-        if (GetCompactString(url)) {
-            synchronized (this) {
-                pagesCount++;
-            }
-            crawl(nextLink);
+        String cs = createCS(url);
+        if (!existCS(cs)) {
+            crawlNextPage(cs, nextLink);
         }
     }
 
     private void extractLinks(Document doc) throws IOException {
-        if (doc == null) return;
+        if (doc == null) {
+            System.out.println("page is null");
+            return;
+        }
+
+        synchronized (this) {
+            pagesCount++;
+            System.out.println(Thread.currentThread().getId() + "page counts: " + pagesCount);
+            System.out.println(compactStrings.size());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+
+                e.printStackTrace();
+            }
+        }
         for (Element link : doc.select("a[href]")) deepCrawl(link);
     }
 
     private void crawl(String url) throws IOException {
-        if (pagesCount > MAX_PAGES) return;
+        if (pagesCount >= MAX_PAGES) return;
         Document doc = request(url);
-        extractLinks(doc);
+        if(doc != null)
+            extractLinks(doc);
     }
 
     public boolean CheckRobot(URL url){
-        System.out.println(url);
+//        System.out.println(url);
         String host=url.getHost();
         String strRobot = "http://" + host + "/robots.txt";
         URL urlRobot;
@@ -87,7 +117,7 @@ public class WebCrawler implements Runnable {
             InputStream urlRobotStream = urlRobot.openStream();
             byte b[] = new byte[1000];
             int numRead = urlRobotStream.read(b);
-            System.out.println(numRead);
+//            System.out.println(numRead);
             if(numRead==-1){
                 return true;
             }
@@ -139,11 +169,11 @@ public class WebCrawler implements Runnable {
                     }
                 }
             }
-            System.out.println(robotRules.size());
+//            System.out.println(robotRules.size());
             for(RobotRule rw:robotRules){
-                System.out.println(rw.rule);
-                System.out.println(rw.userAgent);
-                System.out.println("------------------------------------");
+//                System.out.println(rw.rule);
+//                System.out.println(rw.userAgent);
+//                System.out.println("------------------------------------");
                 String path = url.getPath();
               //  if (rw.rule == "/") return false;       // allows nothing if /
                     String recentUrl="http://" + host+rw.rule;
@@ -165,8 +195,29 @@ public class WebCrawler implements Runnable {
 
         return true;
     }
+    private String createCS(URL url) throws IOException {
+        try {
+            Document doc = Jsoup.connect(url.toString()).get();
+            Elements elements = doc.body().select("*");
+            String cs = computeCompactString(elements);
+            return cs;
+        }
+        catch (SocketTimeoutException e) {
+            System.out.println("soso 7elwa");
+            return "";
+        }
+    }
+    private boolean existCS(String cs)
+    {
+        return compactStrings.contains(cs);
+    }
+    private void addCS(String cs)
+    {
+        compactStrings.add(cs);
+    }
 
-    public boolean GetCompactString(URL url) throws IOException {
+
+    public boolean CompactString(URL url) throws IOException {
 
         Document doc = Jsoup.connect(url.toString()).get();
         Elements elements = doc.body().select("*");
@@ -178,11 +229,6 @@ public class WebCrawler implements Runnable {
         }
     }
 
-    /**
-     * Computing the compact string.
-     * @param elements
-     * @return String
-     * */
     private String computeCompactString(Elements elements) {
         Integer numOfElements = elements.size();
         String cs = "";
@@ -205,17 +251,16 @@ public class WebCrawler implements Runnable {
     private Document request(String url) {
 
         try {
-            System.out.println("\n" + url);
-            Connection con = Jsoup.connect("https://www.wikipedia.org");
+            url = url.startsWith("http") ? url : "https://" + url;
+            Connection con = Jsoup.connect( url);
             Document doc = con.get();
             if (con.response().statusCode() != 200)
-                return null;
-            System.out.println("\n bot ID : " + ID + " Received Webpage at " + url);
+                System.out.println("Error");
             String title = doc.title();
-            System.out.println(title);
             visitedLinks.add(url);
             return doc;
-        } catch (IOException e) {
+        } catch (Exception e) {
+            System.out.println("soso we74a");
             return null;
         }
     }

@@ -10,18 +10,21 @@ public class Main {
 
     public static void main(String[] args) throws MalformedURLException {
 
-        URL url1= new URL("https://www.wikipedia.org/");
+        URL url1= new URL("https://www.wikipedia.org");
         URL url2= new URL("https://www.youm7.com/");
         URL url3= new URL("https://www.yallakora.com/");
         URL url4= new URL("https://technicalseo.com/");
-        URL url5= new URL("https://www.facebook.com/");
+        URL url5= new URL("https://www.facebook.com");
         ArrayList<URL> beginingUrls=new ArrayList<URL>();
-       // beginingUrls.add(url1);
-        beginingUrls.add(url5);
-        //beginingUrls.add(url3);
+//        beginingUrls.add(url1);
+        beginingUrls.add(url2);
+//        beginingUrls.add(url3);
+//        beginingUrls.add(url4);
+//        beginingUrls.add(url5);
+
         ArrayList<WebCrawler> bots=new ArrayList<WebCrawler>();
         for(int i=0;i<beginingUrls.size();i++)
-            bots.add(new WebCrawler(beginingUrls.get(i)));
+            bots.add(new WebCrawler(beginingUrls.get(i) , i + 1));
         ArrayList<DataStructures> SummarizedUrls=new ArrayList<DataStructures>();
 
 //        for(WebCrawler w:bots){
