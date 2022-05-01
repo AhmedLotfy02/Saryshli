@@ -8,8 +8,14 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 public class Index {
-    RemoveStopWord StopWords = new RemoveStopWord(127,"./src/stopWords.txt");
-    Stemming Stemmer = new Stemming();
+    DatabaseClass dbclass;
+    RemoveStopWord StopWords ;
+    Stemming Stemmer ;
+    public Index(){
+        StopWords= new RemoveStopWord(127,"./src/stopWords.txt");
+        Stemmer= new Stemming();
+        dbclass=new DatabaseClass();
+    }
     public String extractStartOfTheLastWord(String sentence)
     {
         sentence = sentence.trim();
@@ -58,27 +64,16 @@ public class Index {
         }
 
     }
-    public void indexing(Document doc){
+    public void indexing(Document doc,String url){
             Hashtable<String, ArrayList<Integer>> databaseWordsFromDocument = new Hashtable<String,ArrayList<Integer>>();
-            getWordsFromString("computer computing moaz mostafa",databaseWordsFromDocument,1);
+            //getWordsFromString("computer computing moaz mostafa",databaseWordsFromDocument,1);
             for(int i = 1;i<7;i++)
                 getWordsFromString(doc.select("h"+i).text(),databaseWordsFromDocument,8-i);
             getWordsFromString(doc.select(":not(h1,h2,h3,h4,h5,h6)").text(),
                     databaseWordsFromDocument,1);
-            System.out.println(databaseWordsFromDocument);
+           // System.out.println(databaseWordsFromDocument);
+//            dbclass.store(databaseWordsFromDocument,url);
 
     }
-    public static void main(String[] args) throws IOException {
-        try
-        {
-            Index myIndexer = new Index();
-            Connection con = Jsoup.connect("https://www.wikipedia.org");
-            Document doc = con.get();
-            myIndexer.indexing(doc);
-        }
-        catch(IOException e)
-        {
-            System.out.println("hello");
-        }
-    }
+
 }
