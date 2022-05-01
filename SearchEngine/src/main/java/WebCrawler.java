@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class WebCrawler implements Runnable {
     private static final int MAX_PAGES = 100;
@@ -18,14 +19,9 @@ public class WebCrawler implements Runnable {
     private String firstLink;
     private static ArrayList<String> visitedLinks = new ArrayList<String>();
     private static ArrayList<String> compactStrings = new ArrayList<>();
-
+    HashMap<String , Integer> popularity;
     private int ID;
     private URL url;
-    private boolean validURL(String url)
-    {
-        String validEnds[] = {"com" , ""};
-        return false;
-    }
 
     public WebCrawler(URL url , int num) {
         System.out.println("Web Crawler is created");
@@ -46,14 +42,9 @@ public class WebCrawler implements Runnable {
             crawl(firstLink);
         } catch (IOException e) {
             System.out.println(ID);
-//            while(true);
             e.printStackTrace();
         }
     }
-    //    private void crawlNextPage(String cs , String link) throws IOException {
-//        addCS(cs);
-//        crawl(link);
-//    }
     private void deepCrawl(Element link) throws IOException {
         String nextLink = link.absUrl("href");
         crawl(nextLink);
@@ -74,24 +65,16 @@ public class WebCrawler implements Runnable {
     private void crawl(String url) throws IOException {
         if (pagesCount >= MAX_PAGES) return;
         Document doc = request(url);
+        synchronized (this) {
+            popularity.put(url, popularity.get(url) + 1);
+        }
         if(doc != null ) saveDocument(doc);
     }
 
     private String createCS(Document doc) throws IOException {
-        try {
-//            System.out.println(url);
-//            Document doc = Jsoup.connect(url.toString()).get();
-//            System.out.println(url);
-            Elements elements = doc.body().select("*");
-            String cs = computeCompactString(elements);
-            return cs;
-        }
-        catch(Exception e)
-        {
-            System.out.println("exception");
-            System.out.println(url);
-            return null;
-        }
+        Elements elements = doc.body().select("*");
+        String cs = computeCompactString(elements);
+        return cs;
     }
     private boolean existCS(String cs)
     {
@@ -100,8 +83,7 @@ public class WebCrawler implements Runnable {
     private void addCS(String cs) {
         synchronized (this) {
             pagesCount++;
-            System.out.println(Thread.currentThread().getId() + "page counts: " + pagesCount);
-            System.out.println(compactStrings.size());
+            System.out.println("thread id : " + Thread.currentThread().getId() + " page counts: " + pagesCount);
         }
         compactStrings.add(cs);
     }
