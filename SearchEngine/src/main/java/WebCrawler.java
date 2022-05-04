@@ -4,33 +4,35 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import javax.print.Doc;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class WebCrawler implements Runnable {
     private static final int MAX_PAGES = 100;
     private static int pagesCount = 0;
-    private Thread thread;
+    private Thread[] threads;
     private String firstLink;
-    private static ArrayList<String> visitedLinks = new ArrayList<String>();
-    private static ArrayList<String> compactStrings = new ArrayList<>();
-    HashMap<String , Integer> popularity;
+    HashMap<String , Integer> popularity = new HashMap<String, Integer>();
+    private ArrayList<String> visitedLinks = new ArrayList<String>();
+    private ArrayList<String> compactStrings = new ArrayList<>();
+    private Queue<String> links = new LinkedList<String>();
     private int ID;
     private URL url;
 
-    public WebCrawler(URL url , int num) {
+    public WebCrawler(Queue<String> links , int num) {
         System.out.println("Web Crawler is created");
-        firstLink = url.getHost();
-        System.out.println(firstLink);
-        this.url=url;
-        ID = num;
-        thread = new Thread(this);
-        thread.start();
+        this.links = links;
+        threads = new Thread[num];
+        for(int i = 0; i < num; i++) {
+            threads[i] = new Thread(this);
+            threads[i].start();
+        }
     }
 
     @Override
@@ -38,8 +40,10 @@ public class WebCrawler implements Runnable {
         // TODO Auto-generated method stub
         //CheckRobot(this.url);
         try {
-            System.out.println("ID : " + ID);
-            crawl(firstLink);
+            while (links.isEmpty()) {
+                System.out.println("I am waiting");
+            }
+            crawl();
         } catch (IOException e) {
             System.out.println(ID);
             e.printStackTrace();
@@ -47,13 +51,14 @@ public class WebCrawler implements Runnable {
     }
     private void deepCrawl(Element link) throws IOException {
         String nextLink = link.absUrl("href");
-        crawl(nextLink);
+        synchronized (this){links.add(nextLink);}
+        crawl();
     }
 
     private void extractLinks(Document doc) throws IOException {
         for (Element link : doc.select("a[href]")) {
             deepCrawl(link);
-        };
+        }
     }
     private void saveDocument(Document doc) throws IOException {
         String cs = createCS(doc);
@@ -62,11 +67,17 @@ public class WebCrawler implements Runnable {
             extractLinks(doc);
         }
     }
-    private void crawl(String url) throws IOException {
+    private void crawl() throws IOException {
         if (pagesCount >= MAX_PAGES) return;
+        System.out.println(Thread.currentThread().getId());
+        String url = "";
+        synchronized (this){url = links.remove();}
         Document doc = request(url);
         synchronized (this) {
-            popularity.put(url, popularity.get(url) + 1);
+            Integer val = popularity.get(url);
+            if(val != null)
+                popularity.put(url, val + 1);
+            else popularity.put(url, 1);
         }
         if(doc != null ) saveDocument(doc);
     }
@@ -125,102 +136,7 @@ public class WebCrawler implements Runnable {
         }
     }
 
-    public Thread getThread() {
-        return thread;
-    }
-}
-//    public boolean CheckRobot(URL url){
-////        System.out.println(url);
-//        String host=url.getHost();
-//        String strRobot = "http://" + host + "/robots.txt";
-//        URL urlRobot;
-//        try { urlRobot = new URL(strRobot);
-//        } catch (MalformedURLException e) {
-//            // Spam Website
-//            return false;
-//        }
-//        //System.out.println(strRobot);
-//        String strCommands;
-//        try
-//        {
-//            InputStream urlRobotStream = urlRobot.openStream();
-//            byte b[] = new byte[1000];
-//            int numRead = urlRobotStream.read(b);
-////            System.out.println(numRead);
-//            if(numRead==-1){
-//                return true;
-//            }
-//            strCommands = new String(b, 0, numRead);
-//            while (numRead != -1) {
-//                numRead = urlRobotStream.read(b);
-//                if (numRead != -1)
-//                {
-//                    String newCommands = new String(b, 0, numRead);
-//                    strCommands += newCommands;
-//                }
-//            }
-//            urlRobotStream.close();
-//        }
-//        catch (IOException e)
-//        {
-//            return true; // if there is no robots.txt file, it is OK to search
-//        }
-//        //System.out.println(strCommands);
-//        if (strCommands.contains("Disallow")) // if there are no "disallow" values, then they are not blocking anything.
-//        {
-//            String[] split = strCommands.split("\n");
-//            ArrayList<RobotRule> robotRules = new ArrayList<>();
-//            String mostRecentUserAgent = null;
-//            boolean useGoogleBotOnly=false;
-//            for (int i = 0; i < split.length; i++)
-//            {
-//                String line = split[i].trim();
-//                if (line.toLowerCase().startsWith("user-agent"))
-//                {
-//                    int start = line.indexOf(":") + 1;
-//                    int end   = line.length();
-//                    mostRecentUserAgent = line.substring(start, end).trim();
-//                   if(useGoogleBotOnly){
-//                       break;
-//                   }
-//                   else if(mostRecentUserAgent.equals("Googlebot") ||mostRecentUserAgent.equals("*")) {
-//                       useGoogleBotOnly=true;
-//                   }
-//                }
-//                else if (line.startsWith("Disallow")&&useGoogleBotOnly) {
-//                    if (mostRecentUserAgent != null) {
-//                        RobotRule r = new RobotRule();
-//                        r.userAgent = mostRecentUserAgent;
-//                        int start = line.indexOf(":") + 1;
-//                        int end   = line.length();
-//                        r.rule = line.substring(start, end).trim();
-//                        robotRules.add(r);
-//                    }
-//                }
-//            }
-////            System.out.println(robotRules.size());
-//            for(RobotRule rw:robotRules){
-////                System.out.println(rw.rule);
-////                System.out.println(rw.userAgent);
-////                System.out.println("------------------------------------");
-//                String path = url.getPath();
-//              //  if (rw.rule == "/") return false;       // allows nothing if /
-//                    String recentUrl="http://" + host+rw.rule;
-//                    if(recentUrl.equals(rw.rule)){
-//                        return false;
-//                    }
-//                //System.out.println("http://" + host+rw.rule);
-//                if (rw.rule.length() <= path.length())
-//                {
-//                    String pathCompare = path.substring(0, rw.rule.length());
-//                    if (pathCompare.equals(rw.rule)) return false;
-//                }
-//            }
-//
-//
-//
-//        }
-//
-//
-//        return true;
+//    public Thread getThread() {
+//        return thread;
 //    }
+}
