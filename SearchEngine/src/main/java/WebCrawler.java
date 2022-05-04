@@ -71,7 +71,10 @@ public class WebCrawler implements Runnable {
         if (pagesCount >= MAX_PAGES) return;
         System.out.println(Thread.currentThread().getId());
         String url = "";
-        synchronized (this){url = links.remove();}
+        synchronized (this){
+            if(!links.isEmpty())
+                url = links.remove();
+        }
         Document doc = request(url);
         synchronized (this) {
             Integer val = popularity.get(url);
