@@ -17,7 +17,6 @@ public class WebCrawler implements Runnable {
     private static final int MAX_PAGES = 100;
     private static int pagesCount = 0;
     private Thread[] threads;
-    private String firstLink;
     HashMap<String , Integer> popularity = new HashMap<String, Integer>();
     private ArrayList<String> visitedLinks = new ArrayList<String>();
     private ArrayList<String> compactStrings = new ArrayList<>();
