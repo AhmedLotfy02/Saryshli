@@ -1,6 +1,3 @@
-
-
-
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -44,7 +41,7 @@ public class Main {
 //        String[] beginingUrls={"www.wikipedia.org","www.youm7.com"};
 
         //ArrayList<WebCrawler> seed=new ArrayList<>();
-       // seed.add(new WebCrawler("www.wikipedia.org",3));
+        // seed.add(new WebCrawler("www.wikipedia.org",3));
 //        for(WebCrawler w:seed) {
 //            try {
 //                w.getThread().join();
