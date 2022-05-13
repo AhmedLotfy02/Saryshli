@@ -5,24 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7907251b-0248-4447-babc-8a23e0203ec7" name="Changes" comment="1)multithreaded of crawler is fixed&#10;2)sequence of crawler is done&#10;3)special cases is handled&#10;4)Database storing and retrieving is done&#10;5)Breadth first of hyperlinks&#10;6)Class for Response Content">
-      <change afterPath="$PROJECT_DIR$/src/main/java/FrontEndHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/QueryProcessing.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ResultStructure.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/WebCrawler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/WebCrawler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/WebCrawlerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/WebCrawlerMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/DataStructures.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/DatabaseClass.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Index.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/RemoveStopWord.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/RobotRule.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Stemming.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/WebCrawler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.78/logs/catalina.out" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.78/logs/catalina.out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/HomePage.html" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/HomePage.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/WEB-INF/classes/GetSearchSen.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/WEB-INF/web.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/WEB-INF/web.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Ranker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Ranker.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,18 +42,9 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "/home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78/lib/servlet-api.jar",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
-  }
-}]]></component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
   <component name="RunManager" selected="Application.QueryProcessing">
     <configuration name="DatabaseClass" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="DatabaseClass" />
