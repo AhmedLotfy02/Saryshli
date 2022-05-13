@@ -1,10 +1,8 @@
 import com.mongodb.client.FindIterable;
 import org.bson.Document;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,31 +45,30 @@ class URLWordsAndSentences
 public class Ranker {
 
     DatabaseClass db;
-    private String sentencebeforeProcessing;
-    private LinkedList<String> sentenceAfterProcessing;
+
+    private String sentenceAfterProcessing;
 
     public HashMap<String, ArrayList<singleURL>> allData;
-    public HashMap<String, wordInfo> mostURLS;
     public HashMap<String , URLWordsAndSentences> URLS;
-    private final int completeSentenceFactor = 20;
     private final int wordCountFactor = 7;
     private final int weightFactor = 1;
-    Ranker(LinkedList<String> sentA,String sentB) {
-        this.sentenceAfterProcessing=sentA;
-        this.sentencebeforeProcessing=sentB;
+    Ranker(String sentB) {
+        this.sentenceAfterProcessing=sentB;
+        //this.sentencebeforeProcessing=sentB;
         this.db=new DatabaseClass();
         this.allData = new HashMap<>();
         retrieveDataFromDB();
-    }
+        }
 
 
     public void retrieveDataFromDB(){
         this.db.specifyDB("IndexerDB");
 
-        for(int i=0;i<sentenceAfterProcessing.size();i++){
-            String word = this.sentenceAfterProcessing.get(i);
+//        for(int i=0;i<sentenceAfterProcessing.size();i++){
+        for(String word : this.sentenceAfterProcessing.split(" ")){
+//            String word = this.sentenceAfterProcessing.get(i);
             System.out.println("word: "+word);
-            FindIterable<Document> it=this.db.retreiveDataFromIndexerByWord(this.sentenceAfterProcessing.get(i));
+            FindIterable<Document> it=this.db.retreiveDataFromIndexerByWord(word);
             ArrayList<singleURL> wordURLS = new ArrayList<>();
             allData.put(word , wordURLS);
             for(Document doc:it){
@@ -96,7 +93,7 @@ public class Ranker {
     ArrayList<String> getCompleteSentences()
     {
         ArrayList<String> matchingStrings = new ArrayList<>();
-        Matcher m = Pattern.compile("\"([^\"]*)\"").matcher(sentencebeforeProcessing);
+        Matcher m = Pattern.compile("\"([^\"]*)\"").matcher(sentenceAfterProcessing);
         while(m.find()){
             matchingStrings.add(m.group(1));
         }
@@ -134,9 +131,13 @@ public class Ranker {
     Integer containsCompleteSentence(String url , String sentence) {
         Queue<Integer> q = new LinkedList<>();
         String[] sentenceWords = sentence.split(" ");
+//       int i = 0;
+//        while(i < sentenceWords.length && !rp.isNotAStopWord(sentenceWords[i++]));
+
+  //      if(i == sentenceWords.length) return 0;
         fillQueue(q , sentenceWords[0] , url );
         out.println(q);
-        for(int i = 1; i < sentenceWords.length ; i++)
+        for(int i=1; i < sentenceWords.length ; i++)
         {
             q = filterQueue(q , sentenceWords[i] , url);
         }
@@ -171,7 +172,7 @@ public class Ranker {
     }
     void addURLSData()
     {
-        for(String word : this.sentenceAfterProcessing)
+        for(String word : this.sentenceAfterProcessing.split(" "))
             addURLInfo(word);
     }
     Integer getTotalWeight(Map.Entry<String, URLWordsAndSentences> o)
@@ -179,6 +180,7 @@ public class Ranker {
         HashMap<String , wordInfo> words = o.getValue().words;
         Integer numOfCompleteSentences = o.getValue().numOfCompleteSentences;
         int weight = words.values().stream().map(s -> s.weight).reduce(0 , (a , c) -> a + c);
+        int completeSentenceFactor = 20;
         return weightFactor * weight + wordCountFactor * words.size() + completeSentenceFactor * numOfCompleteSentences ;
     }
     private Comparator<Map.Entry<String , URLWordsAndSentences>> sortingComparator =
@@ -201,7 +203,7 @@ public class Ranker {
         l.add("Galego");
         l.add("fast");
         String s="How to contributor in corsu fast";
-        Ranker ranker=new Ranker(l,s);
+        Ranker ranker=new Ranker(s);
 
 
 

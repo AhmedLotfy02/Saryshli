@@ -5,8 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7907251b-0248-4447-babc-8a23e0203ec7" name="Changes" comment="1)multithreaded of crawler is fixed&#10;2)sequence of crawler is done&#10;3)special cases is handled&#10;4)Database storing and retrieving is done&#10;5)Breadth first of hyperlinks&#10;6)Class for Response Content">
-      <change beforePath="$PROJECT_DIR$/../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Ranker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Ranker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.78/logs/catalina.out" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.78/logs/catalina.out" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
