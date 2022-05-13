@@ -1,0 +1,43 @@
+05-May-2022 22:34:18.624 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version name:   Apache Tomcat/8.5.78
+05-May-2022 22:34:18.639 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          Mar 31 2022 16:05:28 UTC
+05-May-2022 22:34:18.639 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version number: 8.5.78.0
+05-May-2022 22:34:18.639 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Linux
+05-May-2022 22:34:18.639 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            5.13.0-30-generic
+05-May-2022 22:34:18.640 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          amd64
+05-May-2022 22:34:18.640 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             /usr/lib/jvm/java-16-amazon-corretto
+05-May-2022 22:34:18.640 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           16.0.2+7
+05-May-2022 22:34:18.640 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Amazon.com Inc.
+05-May-2022 22:34:18.640 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         /home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78
+05-May-2022 22:34:18.640 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         /home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78
+05-May-2022 22:34:18.646 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.lang=ALL-UNNAMED
+05-May-2022 22:34:18.646 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.io=ALL-UNNAMED
+05-May-2022 22:34:18.646 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util=ALL-UNNAMED
+05-May-2022 22:34:18.647 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+05-May-2022 22:34:18.647 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+05-May-2022 22:34:18.647 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=/home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78/conf/logging.properties
+05-May-2022 22:34:18.647 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+05-May-2022 22:34:18.647 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djdk.tls.ephemeralDHKeySize=2048
+05-May-2022 22:34:18.647 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.protocol.handler.pkgs=org.apache.catalina.webresources
+05-May-2022 22:34:18.648 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+05-May-2022 22:34:18.648 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dignore.endorsed.dirs=
+05-May-2022 22:34:18.648 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=/home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78
+05-May-2022 22:34:18.648 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=/home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78
+05-May-2022 22:34:18.648 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=/home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78/temp
+05-May-2022 22:34:18.648 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent The Apache Tomcat Native library which allows using OpenSSL was not found on the java.library.path: [/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib]
+05-May-2022 22:34:18.761 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-8080"]
+05-May-2022 22:34:18.854 INFO [main] org.apache.catalina.startup.Catalina.load Initialization processed in 2321 ms
+05-May-2022 22:34:18.979 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service [Catalina]
+05-May-2022 22:34:18.979 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet engine: [Apache Tomcat/8.5.78]
+05-May-2022 22:34:18.992 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78/webapps/ROOT]
+05-May-2022 22:34:20.324 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [127] milliseconds.
+05-May-2022 22:34:20.454 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78/webapps/ROOT] has finished in [1,462] ms
+05-May-2022 22:34:20.455 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78/webapps/host-manager]
+05-May-2022 22:34:20.571 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78/webapps/host-manager] has finished in [117] ms
+05-May-2022 22:34:20.571 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78/webapps/manager]
+05-May-2022 22:34:20.627 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78/webapps/manager] has finished in [55] ms
+05-May-2022 22:34:20.627 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78/webapps/examples]
+05-May-2022 22:34:21.418 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78/webapps/examples] has finished in [791] ms
+05-May-2022 22:34:21.418 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78/webapps/docs]
+05-May-2022 22:34:21.450 INFO [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/home/ahmed/Documents/Saryshli--/apache-tomcat-8.5.78/webapps/docs] has finished in [32] ms
+05-May-2022 22:34:21.454 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
+05-May-2022 22:34:21.518 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 2663 ms

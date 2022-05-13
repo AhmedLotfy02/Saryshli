@@ -34,7 +34,7 @@ public class WebCrawlerMain {
         else{
             //not completed so we will get the links where we stopped from the database
             seedSet=WebCrawlerDb.getLinks();
-            System.out.println("Continued");
+            System.out.println("Continued From last Run");
         }
         LinkedList<String> passedQueue=new LinkedList<String>();
 

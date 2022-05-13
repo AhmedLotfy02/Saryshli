@@ -41,7 +41,6 @@ public class WebCrawler implements Runnable {
     }
     @Override
     public void run() {
-        System.out.println("hhhh");
         String link;
         while(crawledPages<=5000) {
             link = fetchLink();//this function already has synchronization as it access the queue

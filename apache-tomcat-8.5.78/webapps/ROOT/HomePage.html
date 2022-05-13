@@ -88,6 +88,7 @@
           </div>
           <!-- <button type="submit" class="btn btn-primary mb-2">Search</button>/ -->
           <input type="submit" class="btn btn-primary mb-2" name="SearchInput" id="SearchInput" value="Search"/>
+          <button type="submit" class="btn btn-primary mb-2" id="voiceButton" title="requires chrome and mic access">Voice Search</button><br>
           <input type="text" class="btn btn-link output" name="LocationInput" id="LocationInput" value="Egypt"  style="opacity: 0;"/>
         </form>
       </div>
@@ -387,7 +388,49 @@
               "Zambia",
               "Zimbabwe"]
 
-              
+              // voice recognition
+              $( document ).ready(function() {
+                  console.log( "ready!" );
+                  try 
+              {
+                  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                  var recognition = new SpeechRecognition();
+              }
+              catch(e) 
+              {
+                  console.error(e);
+                  $('.no-browser-support').show();
+                  $('.app').hide();
+              }
+
+              var inputText = document.getElementById('inputText2')
+              var voiceButton = document.getElementById('voiceButton')
+              console.log(inputText)
+              console.log(voiceButton)
+              var content = ''
+              recognition.continuous = false;
+              recognition.onresult = function (event)
+              {
+                console.log("entered");
+                  var current = event.resultIndex;
+                  var transcript = event.results[current][0].transcript;
+                  var mobileRepeatBug = (current == 1 && transcript == event.results[0][0].transcript);
+                  if(!mobileRepeatBug)
+                  {
+                      inputText.value = transcript
+                      recognition.stop()
+                  }
+              };
+
+              voiceButton.onclick = function () {voiceButtonClicked()}
+
+              function voiceButtonClicked()
+              {
+                  recognition.start()
+              }
+
+              });
+
             var i = 0;
             var len = locations.length;
             var text = "";
@@ -401,6 +444,7 @@
             // document.getElementById("location-dropdown").innerHTML = text;
             document.getElementById("LocationSelect").innerHTML = text;
         </script>
+
 
         <form name="LocationList">
         </select>

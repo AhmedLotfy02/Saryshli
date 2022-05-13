@@ -27,12 +27,12 @@
      Welcome to Tomcat
   </description>
   <servlet>
-  <servlet-name>SearchSenHandler</servlet-name>
-  <servlet-class>GetSearchSen</servlet-class>
+  <servlet-name>FrontEndHandler</servlet-name>
+  <servlet-class>FrontEndHandler</servlet-class>
 
   </servlet>
   <servlet-mapping>
-  <servlet-name>SearchSenHandler</servlet-name>
+  <servlet-name>FrontEndHandler</servlet-name>
   <url-pattern>/SearchSentence</url-pattern>
   </servlet-mapping>
 </web-app>
