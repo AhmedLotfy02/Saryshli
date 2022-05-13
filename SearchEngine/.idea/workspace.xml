@@ -45,14 +45,7 @@
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
-  <component name="RunManager" selected="Application.QueryProcessing">
-    <configuration name="DatabaseClass" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="DatabaseClass" />
-      <module name="SearchEngine" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Application.Ranker">
     <configuration name="Index" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Index" />
       <module name="SearchEngine" />
@@ -74,6 +67,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Ranker" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Ranker" />
+      <module name="SearchEngine" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="WebCrawlerMain" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="WebCrawlerMain" />
       <module name="SearchEngine" />
@@ -83,11 +83,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Ranker" />
         <item itemvalue="Application.QueryProcessing" />
         <item itemvalue="Application.QueryProcessor" />
         <item itemvalue="Application.WebCrawlerMain" />
         <item itemvalue="Application.Index" />
-        <item itemvalue="Application.DatabaseClass" />
       </list>
     </recent_temporary>
   </component>

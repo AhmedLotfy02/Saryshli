@@ -1,3 +1,7 @@
+import com.mongodb.client.FindIterable;
+import org.bson.Document;
+
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.MatchResult;
@@ -42,39 +46,58 @@ class URLWordsAndSentences
 
 public class Ranker {
 
+    DatabaseClass db;
+    private String sentencebeforeProcessing;
+    private LinkedList<String> sentenceAfterProcessing;
+
     public HashMap<String, ArrayList<singleURL>> allData;
     public HashMap<String, wordInfo> mostURLS;
     public HashMap<String , URLWordsAndSentences> URLS;
     private final int completeSentenceFactor = 20;
     private final int wordCountFactor = 7;
     private final int weightFactor = 1;
-    Ranker() {
-        String searchStr = "hello \"Iam Omar\" love you all \"new user\" this is good \"great\" fareed".toLowerCase(Locale.ROOT);
-        mostURLS = new HashMap<>();
-        allData = new HashMap<>();
-//        sortBy();
-        ArrayList<Integer> arr1 = new ArrayList<>() , arr2 = new ArrayList<>() , arr3= new ArrayList<>() , arr4= new ArrayList<>();
-        arr1.add(10);
-        arr1.add(30);
-        arr1.add(100);
-        arr2.add(10);
-        arr2.add(14);
-        arr2.add(50);
-        allData.put("iam" , new ArrayList<>());
-        allData.put("omar" , new ArrayList<>() );
-        allData.get("omar").add(new singleURL("https://omar.com" , 20, arr2));
-        allData.get("iam").add(new singleURL("https://omar.com" , 30 , arr1));
-        filterToGetMostCommonWords(searchStr);
+    Ranker(LinkedList<String> sentA,String sentB) {
+        this.sentenceAfterProcessing=sentA;
+        this.sentencebeforeProcessing=sentB;
+        this.db=new DatabaseClass();
+        this.allData = new HashMap<>();
+        retrieveDataFromDB();
     }
 
-    ArrayList<String> getCompleteSentences(String searchStr)
+
+    public void retrieveDataFromDB(){
+        this.db.specifyDB("IndexerDB");
+
+        for(int i=0;i<sentenceAfterProcessing.size();i++){
+            String word = this.sentenceAfterProcessing.get(i);
+            System.out.println("word: "+word);
+            FindIterable<Document> it=this.db.retreiveDataFromIndexerByWord(this.sentenceAfterProcessing.get(i));
+            ArrayList<singleURL> wordURLS = new ArrayList<>();
+            allData.put(word , wordURLS);
+            for(Document doc:it){
+                if(!doc.isEmpty()) {
+                    wordURLS.add(new singleURL(doc.get("_id").toString(), (Integer) doc.get("priority"), (ArrayList<Integer>) doc.get("occurs-at")));
+                }
+            }
+            System.out.println("------------------------------------------------");
+
+
+        }
+
+        for(Map.Entry<String,ArrayList<singleURL>>e:allData.entrySet()){
+                System.out.println(e.getKey());
+                for(int i=0;i<e.getValue().size();i++){
+                    out.println(e.getValue().get(i).url);
+                }
+        }
+
+    }
+
+    ArrayList<String> getCompleteSentences()
     {
-        out.println(searchStr);
         ArrayList<String> matchingStrings = new ArrayList<>();
-        Matcher m = Pattern.compile("\"([^\"]*)\"").matcher(searchStr);
+        Matcher m = Pattern.compile("\"([^\"]*)\"").matcher(sentencebeforeProcessing);
         while(m.find()){
-            String res = m.group(1);
-            out.println(res);
             matchingStrings.add(m.group(1));
         }
         return matchingStrings;
@@ -86,10 +109,7 @@ public class Ranker {
         if(URLS.get(url).words.get(firstWord) == null)
             return;
         for(Integer x : URLS.get(url).words.get(firstWord).occursAt)
-//            q.addLast(x + addedLength);
             q.add(x + addedLength);
-        out.println(firstWord);
-        out.println(q);
     }
     Queue<Integer> filterQueue(Queue<Integer> q , String word , String url)
     {
@@ -131,6 +151,11 @@ public class Ranker {
             // add the weight here;
         }
     };
+    public ArrayList<String> getRankedURLS()
+    {
+        filterToGetMostCommonWords();
+        return (ArrayList<String>)URLS.entrySet().stream().sorted(sortingComparator).map(s -> s.getKey()).toList();
+    }
     void addSingleURLInfo(singleURL urlInfo , String word )
     {
         String url = urlInfo.url;
@@ -144,9 +169,9 @@ public class Ranker {
             return;
         for (singleURL urlInfo : allData.get(word)) addSingleURLInfo(urlInfo , word);
     }
-    void addURLSData(String searchStr)
+    void addURLSData()
     {
-        for(String word : searchStr.split(" "))
+        for(String word : this.sentenceAfterProcessing)
             addURLInfo(word);
     }
     Integer getTotalWeight(Map.Entry<String, URLWordsAndSentences> o)
@@ -163,11 +188,22 @@ public class Ranker {
                     return getTotalWeight(o1) - getTotalWeight(o2);
                 }
             };
-    void filterToGetMostCommonWords(String searchStr) {
+    void filterToGetMostCommonWords() {
         URLS = new HashMap<>();
-        addURLSData(searchStr.replaceAll("\"" , ""));
-        ArrayList<String> completeSentences = getCompleteSentences(searchStr);
-        searchStr = searchStr.replaceAll("\"[^\"]*\"" , "");
+        addURLSData();
+        ArrayList<String> completeSentences = getCompleteSentences();
+        //searchStr = searchStr.replaceAll("\"[^\"]*\"" , "");
         completeSentences.forEach(completeSentencesConsumer);
+    }
+    public static void main(String[] args){
+        LinkedList<String> l=new LinkedList<>();
+        l.add("contributor");
+        l.add("Galego");
+        l.add("fast");
+        String s="How to contributor in corsu fast";
+        Ranker ranker=new Ranker(l,s);
+
+
+
     }
 }

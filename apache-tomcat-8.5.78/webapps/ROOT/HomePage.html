@@ -395,6 +395,7 @@
               {
                   var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                   var recognition = new SpeechRecognition();
+                  recognition.intterimResults = true;
               }
               catch(e) 
               {
@@ -407,7 +408,16 @@
               var voiceButton = document.getElementById('voiceButton')
               console.log(inputText)
               console.log(voiceButton)
-              var content = ''
+
+              recognition.addEventListener('result', (e) => {
+                const text = Array.from(e.results)
+                .map(result => result[0])
+                .map(result => result.transcript)
+                .join('');
+                inputText.innerText = text;
+                console.log(text);
+              })
+              /* content = ''
               recognition.continuous = false;
               recognition.onresult = function (event)
               {
@@ -420,7 +430,7 @@
                       inputText.value = transcript
                       recognition.stop()
                   }
-              };
+              }; */
 
               voiceButton.onclick = function () {voiceButtonClicked()}
 

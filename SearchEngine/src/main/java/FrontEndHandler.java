@@ -7,7 +7,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 public class FrontEndHandler extends HttpServlet{
     private QueryProcessing queryprocessor;
-
+    private Ranker ranker;
     public FrontEndHandler(){
         this.queryprocessor=new QueryProcessing();
     }
@@ -15,7 +15,9 @@ public class FrontEndHandler extends HttpServlet{
         String sentence=request.getParameter("SearchSentenceInput");
         System.out.println(sentence);
 
+
         LinkedList<String>QueryProcessorresult= this.queryprocessor.process(sentence);
+        // this.ranker=new Ranker(QueryProcessorresult,sentence);
 
 
         //query processor

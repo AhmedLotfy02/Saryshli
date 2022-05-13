@@ -154,6 +154,11 @@ public class DatabaseClass {
         return links;
     }
 
+    public FindIterable<Document> retreiveDataFromIndexerByWord(String word){
+        this.specifyCollection(word);
+        FindIterable<Document> it=collection.find();
+        return it;
+    }
     public boolean store(Hashtable<String, Index.Pair_Data> wordTable, String url){
         MongoDatabase db=mongoclient.getDatabase("IndexerDB");
 
