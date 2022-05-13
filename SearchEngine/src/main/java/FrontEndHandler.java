@@ -1,21 +1,33 @@
 import java.io.IOException;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 import javax.servlet.*;
 import javax.servlet.http.*;
 public class FrontEndHandler extends HttpServlet{
-  //  private QueryProcessing queryprocessor;
+    private QueryProcessing queryprocessor;
 
     public FrontEndHandler(){
-    //    this.queryprocessor=new QueryProcessing();
+        this.queryprocessor=new QueryProcessing();
     }
     public void doGet(HttpServletRequest request,HttpServletResponse response) throws IOException {
         String sentence=request.getParameter("SearchSentenceInput");
         System.out.println(sentence);
-      //  this.queryprocessor.process(sentence);
+
+        LinkedList<String>QueryProcessorresult= this.queryprocessor.process(sentence);
+
+
         //query processor
         ArrayList<ResultStructure> results=new ArrayList<>();
+        ResultStructure r1=new ResultStructure("www.aref.com","How to be a zalabia","jaskhfjkdsfhskdjfhsdkjfhskdfhskdfjhsf");
+        ResultStructure r2=new ResultStructure("www.lotfy.com","Hasdasadasdto be a zalabia","jaskhfjkdsfhskdjfhsdkjfhskdfhskdfjhsf");
+
+        ResultStructure r3=new ResultStructure("www.assad.com.lof","Hasdasdto be a zalabia","jaskhfjkdsfhskdjfhsdkjfhskdfhskdfjhsf");
+        results.add(r1);
+        results.add(r2);
+        results.add(r3);
+
         response.setContentType ("text/html");
 
         String page = "<!DOCTYPE html>\n" +

@@ -1,4 +1,4 @@
-class Stemming
+public class Stemming
 {
     private char[] b;
     private int i,     /* offset into b */

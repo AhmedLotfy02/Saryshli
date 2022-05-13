@@ -9,10 +9,8 @@ import javax.print.Doc;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.*;
-import java.util.function.Consumer;
 
 import static java.lang.System.exit;
 
@@ -65,7 +63,9 @@ public class WebCrawler implements Runnable {
                     if(CheckCS){
                         //new one and store it in CrawlerResult collection
                         Document doc=responseReturn.getDocument();
-                        this.CrawlerDB.storeOneCrawlerResult(doc.title(),doc.outerHtml(),cs,link);
+                        synchronized (this) {
+                            this.CrawlerDB.storeOneCrawlerResult(doc.title(), cs, link);
+                        }
                         //lets bfs on the hyperlinks
                         Elements hL=doc.select("a[href]");
                         hyperLinks=new ArrayList<>();
@@ -96,7 +96,10 @@ public class WebCrawler implements Runnable {
                     }
                     else{
                         //visited before
+
                         synchronized (this){
+                            CrawlerDB.updateLinks(links);
+
                             QueueSize--;
                         }
                     }
@@ -104,6 +107,8 @@ public class WebCrawler implements Runnable {
                 else{
                     System.out.println("cannot connect to  url: "+url);
                     synchronized (this){
+                        CrawlerDB.updateLinks(links);
+
                         QueueSize--;
                     }
                 }
@@ -113,6 +118,8 @@ public class WebCrawler implements Runnable {
             }
             else{
                 synchronized (this){
+                    CrawlerDB.updateLinks(links);
+
                     QueueSize--;
                 }
                 System.out.println("Link : "+link+" blocked our crawler using robot.txt");
@@ -120,7 +127,7 @@ public class WebCrawler implements Runnable {
             }
 
         }
-
+        System.out.println("thread : "+Thread.currentThread().getId()+"has finished");
 
 
 
@@ -158,7 +165,7 @@ public class WebCrawler implements Runnable {
                 }
                 System.out.println("hhh");
                 link = links.remove();
-
+                System.out.println(links.size());
 
             }
         }

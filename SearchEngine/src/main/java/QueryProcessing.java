@@ -14,7 +14,7 @@ public class QueryProcessing {
         if(StopWords.isNotAStopWord(word))
             result.add(Stemmer.getStemmedString(word));
     }
-    public Boolean process(String query)
+    public LinkedList<String> process(String query)
     {
         int n = query.length();
         LinkedList<String> result = new LinkedList<String>();
@@ -32,13 +32,14 @@ public class QueryProcessing {
             }
             processWord(word,result);
         }
+
         System.out.println(result);
-        return true;
+        return result;
     }
 
-    public static void main(String[] args)
-    {
-        QueryProcessing qp = new QueryProcessing();
-        qp.process("how to learn english fast");
-    }
+//    public static void main(String[] args)
+//    {
+//        QueryProcessing qp = new QueryProcessing();
+//        qp.process("how to learn english fast");
+//    }
 }

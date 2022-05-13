@@ -1,21 +1,34 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Map;
 
-
+import com.mongodb.client.FindIterable;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
 public class Index {
-    DatabaseClass dbclass;
-    RemoveStopWord StopWords ;
+    private  DatabaseClass db;
+    RemoveStopWord StopWords;
+    boolean isSpam;
+    private int words_counter;
     Stemming Stemmer ;
-    public Index(){
+
+    public Index(DatabaseClass db){
+        this.db=db;
         StopWords= new RemoveStopWord(127,"./src/stopWords.txt");
         Stemmer= new Stemming();
-        dbclass=new DatabaseClass();
     }
+    public class Pair_Data
+    {
+        public double itf;
+        public ArrayList<Integer> occursAt;
+        public Pair_Data()
+        {
+            occursAt = new ArrayList<>();
+        }
+    }
+
     public String extractStartOfTheLastWord(String sentence)
     {
         sentence = sentence.trim();
@@ -25,31 +38,33 @@ public class Index {
         }
         return word;
     }
-    private void processWord(int start,Hashtable<String,ArrayList<Integer>> databaseWordsFromString,int weight,String word)
+    private void processWord(int start,Hashtable<String, Pair_Data> databaseWordsFromString,int weight,String word,boolean addToDocument)
     {
-        ArrayList<Integer> arrayPointer;
         word = word.trim();
         if(word.length() == 0)
             return;
         word = Stemmer.getStemmedString(word);
-        arrayPointer = databaseWordsFromString.get(word);
-        if(arrayPointer == null) {
-            databaseWordsFromString.put(word,new ArrayList<>(2));
-            arrayPointer = databaseWordsFromString.get(word);
-            arrayPointer.add(weight);
-            arrayPointer.add(start);
-            return;
-        };
-        arrayPointer.add(start);
-        arrayPointer.set(0,arrayPointer.get(0)+weight);
-//        System.out.println(word+" "+arrayPointer);
+        Pair_Data pd = databaseWordsFromString.get(word);
+        if(addToDocument)
+        {
+            words_counter++;
+            if(pd == null) {
+                pd = new Pair_Data();
+                databaseWordsFromString.put(word,pd);
+                pd.occursAt.add(weight);
+                pd.occursAt.add(start);
+                return;
+            };
+            pd.occursAt.add(start);
+        }
+        pd.occursAt.set(0,pd.occursAt.get(0)+weight);
     }
-    private void getWordsFromString(String sentence,Hashtable<String,ArrayList<Integer>> databaseWordsFromString,int weight)
+    private void getWordsFromString(String sentence,Hashtable<String, Pair_Data> databaseWordsFromDocument,int weight,boolean addToDocument)
     {
         String word= extractStartOfTheLastWord(sentence);
         int n = sentence.length();
         int end = sentence.length() - word.length();
-        processWord(end,databaseWordsFromString,weight,word);
+        processWord(end,databaseWordsFromDocument,weight,word,addToDocument);
         int start = 0;
         for (int i = 0;i< end;i++){
             start = i;
@@ -60,20 +75,76 @@ public class Index {
                 i++;
                 temp = sentence.charAt(i);
             }
-            processWord(start,databaseWordsFromString,weight,word);
+            processWord(start,databaseWordsFromDocument,weight,word,addToDocument);
         }
-
+    }
+    public void calcITF(Hashtable<String, Pair_Data> databaseWordsFromString)
+    {
+        databaseWordsFromString.forEach((key, value)-> {
+            value.itf = ((double) (value.occursAt.size() - 1)/(double) words_counter)*100;
+            if(value.itf >= 20) {
+                System.out.println("spam page");
+                isSpam = true;
+                return;
+            }
+        });
     }
     public void indexing(Document doc,String url){
-            Hashtable<String, ArrayList<Integer>> databaseWordsFromDocument = new Hashtable<String,ArrayList<Integer>>();
-            //getWordsFromString("computer computing moaz mostafa",databaseWordsFromDocument,1);
-            for(int i = 1;i<7;i++)
-                getWordsFromString(doc.select("h"+i).text(),databaseWordsFromDocument,8-i);
-            getWordsFromString(doc.select(":not(h1,h2,h3,h4,h5,h6)").text(),
-                    databaseWordsFromDocument,1);
-           // System.out.println(databaseWordsFromDocument);
-//            dbclass.store(databaseWordsFromDocument,url);
+        Hashtable<String, Pair_Data> databaseWordsFromDocument = new Hashtable<String,Pair_Data>();
 
+        words_counter = 0;
+        isSpam = false;
+        getWordsFromString(doc.select("*").text(),
+                databaseWordsFromDocument,1,true);
+        calcITF(databaseWordsFromDocument);
+        if(isSpam)
+        {
+            System.out.println("spam page\n");
+            return;
+        }
+        for(int i = 1;i<7;i++)
+            getWordsFromString(doc.select("h"+i).text(),databaseWordsFromDocument,8-i,false);
+        this.db.store(databaseWordsFromDocument,url);
+//
+//        databaseWordsFromDocument.forEach((key,value)->{
+//            System.out.println(key+" : " + value.itf + " : "+ value.occursAt);
+//        });
     }
+    public static void main(String[] args) throws IOException {
+        //try
+        //{
+        DatabaseClass db=new DatabaseClass();
 
+        Index myIndexer = new Index(db);
+     FindIterable<org.bson.Document>it= db.retreiveCrawledResult();
+       for(org.bson.Document doc:it)
+        for(Map.Entry<String,Object>e:doc.entrySet()){
+            if(e.getKey().equals("link")){
+                try{
+                    System.out.println(e.getValue().toString());
+
+                    Connection con = Jsoup.connect(e.getValue().toString());
+                    Document doc1 = con.get();
+                    myIndexer.indexing(doc1,e.getValue().toString());
+                }
+                catch (Exception e1){
+                    System.out.println("error happened while connecting to link : "+e.getKey()+" in indexer");
+                }
+
+
+
+                //System.out.println(e.getValue());
+            }
+        }
+//            Connection con = Jsoup.connect("https://www.wikipedia.org");
+//
+//
+//            Document doc = con.get();
+//            myIndexer.indexing(doc);
+        //}
+//        catch(IOException e)
+//        {
+//            System.out.println("hello");
+//        }
+    }
 }
