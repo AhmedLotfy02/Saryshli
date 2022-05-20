@@ -14,9 +14,9 @@ public class FrontEndHandler extends HttpServlet{
     public void doGet(HttpServletRequest request,HttpServletResponse response) throws IOException {
         String sentence=request.getParameter("SearchSentenceInput");
         System.out.println(sentence);
+        QueryProcessing.Sentence_List QueryProcessorResult ;
 
-
-        LinkedList<String>QueryProcessorresult= this.queryprocessor.process(sentence);
+        QueryProcessorResult= this.queryprocessor.process(sentence);
         // this.ranker=new Ranker(QueryProcessorresult,sentence);
 
 
