@@ -7,7 +7,8 @@
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous"></head>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="./fontawesome-free-5.15.4-web/css/all.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -36,6 +37,39 @@
       height: 710px;
     }
 
+    #SearchSentence {
+      width: 80%;
+      margin: 0 auto;
+      position: relative;
+  }
+  #SearchSentence input {
+      width: 100%;
+      font-size: 1.5rem;
+      padding: 10px 15px;
+      border: 2px solid #ccc;
+      border-radius: 20px;
+  }
+  #SearchSentence button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background-color: transparent;
+      outline: none;
+      border: none;
+      width: 3rem;
+      text-align: center;
+      font-size: 1.75rem;
+      cursor: pointer;
+      color: #333;
+  }
+
+  .searchIcon {
+    height: 100%;
+    left: 12px;
+    position: absolute;
+    top: 40%;
+  }
     .bottom-part{
       background-color: rgb(227, 239, 240);
       bottom: 0;
@@ -81,15 +115,9 @@
       <!-- search field -->
       <div class="search-box">
         <!--  class="form-inline" -->
-        <form action="SearchSentence" method="GET" id="SearchSentence">
-          <div class="form-group mx-sm-3 mb-2">
-            <label for="inputText2" class="sr-only">Search</label>
-            <input type="text" class="form-control shadows" id="inputText2" placeholder="" name="SearchSentenceInput">
-          </div>
-          <!-- <button type="submit" class="btn btn-primary mb-2">Search</button>/ -->
-          <input type="submit" class="btn btn-primary mb-2" name="SearchInput" id="SearchInput" value="Search"/>
-          <button type="submit" class="btn btn-primary mb-2" id="voiceButton" title="requires chrome and mic access">Voice Search</button><br>
-          <input type="text" class="btn btn-link output" name="LocationInput" id="LocationInput" value="Egypt"  style="opacity: 0;"/>
+        <form action="SearchSentence" method="GET" id="SearchSentence" target="_blank">
+          <i class="fas fa-search searchIcon"></i>
+          <input type="text" name="searchInput" id="InputText2" placeholder="    Search in Saryshli...." autocomplete="off" autofocus> 
         </form>
       </div>
 
@@ -389,60 +417,90 @@
               "Zimbabwe"]
 
               // voice recognition
-              $( document ).ready(function() {
-                  console.log( "ready!" );
-                  try 
-              {
-                  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                  var recognition = new SpeechRecognition();
-              }
-              catch(e) 
-              {
-                  console.error(e);
-                  $('.no-browser-support').show();
-                  $('.app').hide();
-              }
+              const searchForm = document.querySelector("#SearchSentence");
+              const searchFormInput = searchForm.querySelector("input"); // <=> document.querySelector("#search-form input");
+              const info = document.querySelector(".info");
 
-              var inputText = document.getElementById('inputText2')
-              var voiceButton = document.getElementById('voiceButton')
-              console.log(inputText)
-              console.log(voiceButton)
-              var content = ''
-              recognition.continuous = false;
-              recognition.onresult = function (event)
-              {
-                console.log("entered");
-                  var current = event.resultIndex;
-                  var transcript = event.results[current][0].transcript;
-                  var mobileRepeatBug = (current == 1 && transcript == event.results[0][0].transcript);
-                  if(!mobileRepeatBug)
-                  {
-                      inputText.value = transcript
-                      recognition.stop()
+              // The speech recognition interface lives on the browser’s window object
+              const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition; // if none exists -> undefined
+
+              if(SpeechRecognition) {
+                  console.log("Your Browser supports speech Recognition");
+                  
+                  const recognition = new SpeechRecognition();
+                  recognition.continuous = true;
+                  //recognition.lang = "ar";
+
+                  searchForm.insertAdjacentHTML("beforeend", '<button type="button"><i class="fas fa-microphone"></i></button>');
+                  searchFormInput.style.paddingRight = "50px";
+
+                  const micBtn = searchForm.querySelector("button");
+                  const micIcon = micBtn.firstElementChild;
+
+                  micBtn.addEventListener("click", micBtnClick);
+                  function micBtnClick() {
+                      console.log("button clicked");
+
+                      if(micIcon.classList.contains("fa-microphone")) { // Start Voice Recognition
+                          recognition.start(); // First time you have to allow access to mic!
+                      }
+                      else {
+                          recognition.stop();
+                      }
                   }
-              };
 
-              voiceButton.onclick = function () {voiceButtonClicked()}
+                  recognition.addEventListener("start", startSpeechRecognition); // <=> recognition.onstart = function() {...}
+                  function startSpeechRecognition() {
+                      micIcon.classList.remove("fa-microphone");
+                      micIcon.classList.add("fa-microphone-slash");
+                      searchFormInput.focus();
+                      console.log("Voice activated, SPEAK");
+                  }
 
-              function voiceButtonClicked()
-              {
-                  recognition.start()
+                  recognition.addEventListener("end", endSpeechRecognition); // <=> recognition.onend = function() {...}
+                  function endSpeechRecognition() {
+                      micIcon.classList.remove("fa-microphone-slash");
+                      micIcon.classList.add("fa-microphone");
+                      searchFormInput.focus();
+                      console.log("Speech recognition service disconnected");
+                  }
+
+                  recognition.addEventListener("result", resultOfSpeechRecognition); // <=> recognition.onresult = function(event) {...} - Fires when you stop talking
+                  function resultOfSpeechRecognition(event) {
+                      const current = event.resultIndex;
+                      const transcript = event.results[current][0].transcript;
+                      
+                      if(transcript.toLowerCase().trim()==="stop recording") {
+                      recognition.stop();
+                      }
+                      else if(!searchFormInput.value) {
+                      searchFormInput.value = transcript;
+                      }
+                      else {
+                      if(transcript.toLowerCase().trim()==="go") {
+                          searchForm.submit();
+                      }
+                      else if(transcript.toLowerCase().trim()==="reset input") {
+                          searchFormInput.value = "";
+                      }
+                      else {
+                          searchFormInput.value = transcript;
+                      }
+                      }
+                      // searchFormInput.value = transcript;
+                      // searchFormInput.focus();
+                      // setTimeout(() => {
+                      //   searchForm.submit();
+                      // }, 500);
+                  }
+                  
+                  //info.textContent = 'Voice Commands: "stop recording", "reset input", "go"';
+                  
               }
-
-              });
-
-            var i = 0;
-            var len = locations.length;
-            var text = "";
-            text += '<option selected>Locations</option>';
-
-            for (; i < len; ) {
-            // text += '<a class="dropdown-item" href="#" id="location_' + i + '" onclick="document.getElementById(\'selectedLocationP\').innerHTML='+locations[i]+';">' + locations[i] + "</a>";
-            text += '<option id="location_' + i + '"">' + locations[i] + "</option>";
-            i++;
-            }
-            // document.getElementById("location-dropdown").innerHTML = text;
-            document.getElementById("LocationSelect").innerHTML = text;
+              else {
+                  console.log("Your Browser does not support speech Recognition");
+                  info.textContent = "Your Browser does not support Speech Recognition";
+              }
         </script>
 
 
