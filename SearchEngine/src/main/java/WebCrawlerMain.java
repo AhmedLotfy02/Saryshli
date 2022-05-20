@@ -24,12 +24,12 @@ public class WebCrawlerMain {
             seedSet.add("https://www.yallakora.com/");
             seedSet.add ("https://technicalseo.com/");
             seedSet.add("https://www.facebook.com/");
+            seedSet.add("https://www.javatpoint.com/");
+            seedSet.add("https://www.w3schools.com/");
+            seedSet.add("https://www.filgoal.com/");
+            seedSet.add("https://www.fcbarcelona.com/");
             WebCrawlerDb.InsertLinks(seedSet);
-//            ArrayList<String> arr=new ArrayList<>();
-//            arr=WebCrawlerDb.getLinks();
-//            for(int i=0;i<seedSet.size();i++){
-//                System.out.println(arr.get(i));
-//            }
+
         }
         else{
             //not completed so we will get the links where we stopped from the database
@@ -43,15 +43,16 @@ public class WebCrawlerMain {
                 passedQueue.add(seedSet.get(i));
         }
         WebCrawler webCrawler=new WebCrawler(passedQueue,pageCount,WebCrawlerDb);
-        //Scanner sc=new Scanner(System.in);
-        //int numThreads=sc.nextInt();
-        Thread threads[] = new Thread[8];
+        Scanner sc=new Scanner(System.in);
+        System.out.println("Please Enter the number of threads you want: ");
+        int num=sc.nextInt();
+        Thread threads[] = new Thread[num];
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < num; i++) {
             threads[i] = new Thread(webCrawler);
             threads[i].start();
         }
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < num; i++) {
             try {
                 threads[i].join();
             } catch (InterruptedException e) {

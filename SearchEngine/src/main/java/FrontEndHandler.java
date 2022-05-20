@@ -1,34 +1,49 @@
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.io.IOException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import javax.servlet.*;
 import javax.servlet.http.*;
 public class FrontEndHandler extends HttpServlet{
-    private QueryProcessing queryprocessor;
-    private Ranker ranker;
     public FrontEndHandler(){
-        this.queryprocessor=new QueryProcessing();
     }
     public void doGet(HttpServletRequest request,HttpServletResponse response) throws IOException {
         String sentence=request.getParameter("SearchSentenceInput");
         System.out.println(sentence);
-        QueryProcessing.Sentence_List QueryProcessorResult ;
 
-        QueryProcessorResult= this.queryprocessor.process(sentence);
-        // this.ranker=new Ranker(QueryProcessorresult,sentence);
+        Ranker ranker=new Ranker(sentence);
+        List<rankerReturn> rankerReturn=ranker.getRankedURLS();
+        ArrayList<ResultStructure> results=new ArrayList<>();
+
+        for(int i=0;i<rankerReturn.size();i++){
+            String f="";
+            Connection con = Jsoup.connect(rankerReturn.get(i).url);
+            Document doc = con.get();
+            String text = doc.select("*").text();
+            int end= rankerReturn.get(i).plaintTextIndex+300;
+            for(int j = rankerReturn.get(i).plaintTextIndex; j<=end; j++){
+                f+=text.charAt(j);
+            }
+            ResultStructure r1=new ResultStructure(rankerReturn.get(i).url,doc.title(),f);
+            results.add(r1);
+        }
+
 
 
         //query processor
-        ArrayList<ResultStructure> results=new ArrayList<>();
-        ResultStructure r1=new ResultStructure("www.aref.com","How to be a zalabia","jaskhfjkdsfhskdjfhsdkjfhskdfhskdfjhsf");
-        ResultStructure r2=new ResultStructure("www.lotfy.com","Hasdasadasdto be a zalabia","jaskhfjkdsfhskdjfhsdkjfhskdfhskdfjhsf");
-
-        ResultStructure r3=new ResultStructure("www.assad.com.lof","Hasdasdto be a zalabia","jaskhfjkdsfhskdjfhsdkjfhskdfhskdfjhsf");
-        results.add(r1);
-        results.add(r2);
-        results.add(r3);
+//        ResultStructure r1=new ResultStructure("www.aref.com","How to be a zalabia","jaskhfjkdsfhskdjfhsdkjfhskdfhskdfjhsf");
+//        ResultStructure r2=new ResultStructure("www.lotfy.com","Hasdasadasdto be a zalabia","jaskhfjkdsfhskdjfhsdkjfhskdfhskdfjhsf");
+//
+//        ResultStructure r3=new ResultStructure("www.assad.com.lof","Hasdasdto be a zalabia","jaskhfjkdsfhskdjfhsdkjfhskdfhskdfjhsf");
+//        results.add(r1);
+//        results.add(r2);
+//        results.add(r3);
 
         response.setContentType ("text/html");
 
