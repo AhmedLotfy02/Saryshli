@@ -11,22 +11,26 @@ import static java.lang.System.*;
 class singleURL {
     public String url;
     public int weight;
+    double itf;
     ArrayList<Integer> occursAt;
-    singleURL(String u , int w , ArrayList<Integer> o)
+    singleURL(String u , int w , ArrayList<Integer> o , double i)
     {
         url = u;
         weight = w;
         occursAt = o;
+        itf = i;
     }
 }
 
 class wordInfo{
     ArrayList<Integer> occursAt;
     Integer weight;
-    wordInfo(ArrayList<Integer> occurs)
+    double itf;
+    wordInfo(ArrayList<Integer> occurs , int w , double i)
     {
-        weight = 0;
+        weight = w;
         occursAt = occurs;
+        itf = i;
     }
 }
 class URLWordsAndSentences
@@ -52,6 +56,8 @@ public class Ranker {
     public HashMap<String , URLWordsAndSentences> URLS;
     private final int wordCountFactor = 7;
     private final int weightFactor = 1;
+    private final int ITFFactor = 10;
+    private final int completeSentenceFactor = 4;
     Ranker(String sentB) {
         this.sentenceAfterProcessing=sentB;
         //this.sentencebeforeProcessing=sentB;
@@ -65,27 +71,15 @@ public class Ranker {
         this.db.specifyDB("IndexerDB");
 
 //        for(int i=0;i<sentenceAfterProcessing.size();i++){
-        for(String word : this.sentenceAfterProcessing.split(" ")){
-//            String word = this.sentenceAfterProcessing.get(i);
-            System.out.println("word: "+word);
+        for(String word : this.sentenceAfterProcessing.replace("\"" , "").split(" ")){
             FindIterable<Document> it=this.db.retreiveDataFromIndexerByWord(word);
             ArrayList<singleURL> wordURLS = new ArrayList<>();
             allData.put(word , wordURLS);
             for(Document doc:it){
                 if(!doc.isEmpty()) {
-                    wordURLS.add(new singleURL(doc.get("_id").toString(), (Integer) doc.get("priority"), (ArrayList<Integer>) doc.get("occurs-at")));
+                    wordURLS.add(new singleURL(doc.get("_id").toString(), (Integer) doc.get("priority"), (ArrayList<Integer>) doc.get("occurs-at") , (double) doc.get("itf")));
                 }
             }
-            System.out.println("------------------------------------------------");
-
-
-        }
-
-        for(Map.Entry<String,ArrayList<singleURL>>e:allData.entrySet()){
-                System.out.println(e.getKey());
-                for(int i=0;i<e.getValue().size();i++){
-                    out.println(e.getValue().get(i).url);
-                }
         }
 
     }
@@ -114,29 +108,22 @@ public class Ranker {
         Queue<Integer> newQueue = new LinkedList<>();
         if(URLS.get(url).words.get(word) == null)
             return newQueue;
-        out.println(URLS.get(url).words.get(word).occursAt);
         for(Integer x : URLS.get(url).words.get(word).occursAt)
         {
             Integer top = q.peek();
-            if(top == x) {
+            if(top.equals(x)) {
                 q.remove();
                 newQueue.add(top + addedLength);
             }
-            if(top < x)
+            if(top.compareTo(x) < 0) // less than
                 q.remove();
         }
-        out.println(newQueue);
         return newQueue;
     }
     Integer containsCompleteSentence(String url , String sentence) {
         Queue<Integer> q = new LinkedList<>();
         String[] sentenceWords = sentence.split(" ");
-//       int i = 0;
-//        while(i < sentenceWords.length && !rp.isNotAStopWord(sentenceWords[i++]));
-
-  //      if(i == sentenceWords.length) return 0;
         fillQueue(q , sentenceWords[0] , url );
-        out.println(q);
         for(int i=1; i < sentenceWords.length ; i++)
         {
             q = filterQueue(q , sentenceWords[i] , url);
@@ -146,23 +133,21 @@ public class Ranker {
     Consumer<String> completeSentencesConsumer = sentence -> {
         for(String url : URLS.keySet())
         {
-            out.println(url);
             Integer occur = containsCompleteSentence(url , sentence);
-            out.println(occur);
-            // add the weight here;
+            URLS.get(url).numOfCompleteSentences += occur;
         }
     };
-    public ArrayList<String> getRankedURLS()
+    public List<String> getRankedURLS()
     {
         filterToGetMostCommonWords();
-        return (ArrayList<String>)URLS.entrySet().stream().sorted(sortingComparator).map(s -> s.getKey()).toList();
+        return URLS.entrySet().stream().sorted(sortingComparator).map(s -> s.getKey()).toList();
     }
     void addSingleURLInfo(singleURL urlInfo , String word )
     {
         String url = urlInfo.url;
         if (!URLS.containsKey(url))
             URLS.put(url, new URLWordsAndSentences());
-        URLS.get(url).words.put(word, new wordInfo(urlInfo.occursAt));
+        URLS.get(url).words.put(word, new wordInfo(urlInfo.occursAt , urlInfo.weight , urlInfo.itf));
     }
     void addURLInfo(String word)
     {
@@ -172,7 +157,7 @@ public class Ranker {
     }
     void addURLSData()
     {
-        for(String word : this.sentenceAfterProcessing.split(" "))
+        for(String word : this.sentenceAfterProcessing.replace("\"" , "").split(" "))
             addURLInfo(word);
     }
     Integer getTotalWeight(Map.Entry<String, URLWordsAndSentences> o)
@@ -180,32 +165,27 @@ public class Ranker {
         HashMap<String , wordInfo> words = o.getValue().words;
         Integer numOfCompleteSentences = o.getValue().numOfCompleteSentences;
         int weight = words.values().stream().map(s -> s.weight).reduce(0 , (a , c) -> a + c);
-        int completeSentenceFactor = 20;
-        return weightFactor * weight + wordCountFactor * words.size() + completeSentenceFactor * numOfCompleteSentences ;
-    }
+        double itf = words.values().stream().map(s -> s.itf).reduce(0.0 , (a , c) -> a + c);
+        Integer res =  weightFactor * weight + wordCountFactor * words.size() + completeSentenceFactor * numOfCompleteSentences + (int)(ITFFactor * itf);
+        return res;
+        }
     private Comparator<Map.Entry<String , URLWordsAndSentences>> sortingComparator =
             new Comparator<Map.Entry<String, URLWordsAndSentences>>() {
                 @Override
                 public int compare(Map.Entry<String, URLWordsAndSentences> o1, Map.Entry<String, URLWordsAndSentences> o2) {
-                    return getTotalWeight(o1) - getTotalWeight(o2);
+                    return getTotalWeight(o2) - getTotalWeight(o1);
                 }
             };
     void filterToGetMostCommonWords() {
         URLS = new HashMap<>();
         addURLSData();
         ArrayList<String> completeSentences = getCompleteSentences();
-        //searchStr = searchStr.replaceAll("\"[^\"]*\"" , "");
         completeSentences.forEach(completeSentencesConsumer);
     }
     public static void main(String[] args){
-        LinkedList<String> l=new LinkedList<>();
-        l.add("contributor");
-        l.add("Galego");
-        l.add("fast");
-        String s="How to contributor in corsu fast";
-        Ranker ranker=new Ranker(s);
-
-
-
+        String s="barcelona";
+        Ranker ranker = new Ranker(s);
+        List<String> urls =  ranker.getRankedURLS();
+        out.println(urls);
     }
 }

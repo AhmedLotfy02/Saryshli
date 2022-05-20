@@ -193,7 +193,7 @@ public class WebCrawler implements Runnable {
             if(numRead==-1){
                 return true;
             }
-            strCommands = new String(b, 0, numRead);
+                strCommands = new String(b, 0, numRead);
             while (numRead != -1) {
                 numRead = urlRobotStream.read(b);
                 if (numRead != -1)
