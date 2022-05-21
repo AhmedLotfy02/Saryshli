@@ -5,18 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7907251b-0248-4447-babc-8a23e0203ec7" name="Changes" comment="1)multithreaded of crawler is fixed&#10;2)sequence of crawler is done&#10;3)special cases is handled&#10;4)Database storing and retrieving is done&#10;5)Breadth first of hyperlinks&#10;6)Class for Response Content">
-      <change afterPath="$PROJECT_DIR$/src/main/java/rankerReturn.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/testFRONT.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/DataStructures.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/DataStructures.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/DatabaseClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/DatabaseClass.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/FrontEndHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/FrontEndHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Index.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Index.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Ranker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Ranker.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/WebCrawler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/WebCrawler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/WebCrawlerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/WebCrawlerMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/rankerReturn.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/rankerReturn.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.78/logs/catalina.out" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.78/logs/catalina.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/HomePage.html" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/HomePage.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/RELEASE-NOTES.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/RELEASE-NOTES.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/WEB-INF/classes/FrontEndHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/WEB-INF/classes/FrontEndHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/asf-logo-wide.svg" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/asf-logo-wide.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/speech.renamejs" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/speech.renamejs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/tomcat.css" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/tomcat.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/tomcat.svg" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.78/webapps/ROOT/tomcat.svg" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,14 +55,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
   }
-}]]></component>
-  <component name="RunManager" selected="Application.testFRONT">
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="ranker" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.WebCrawlerMain">
     <configuration name="Index" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Index" />
       <module name="SearchEngine" />
@@ -97,9 +109,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.testFRONT" />
-        <item itemvalue="Application.Ranker" />
         <item itemvalue="Application.WebCrawlerMain" />
+        <item itemvalue="Application.testFRONT" />
         <item itemvalue="Application.QueryProcessing" />
         <item itemvalue="Application.Index" />
       </list>

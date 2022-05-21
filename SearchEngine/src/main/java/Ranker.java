@@ -1,6 +1,7 @@
 import com.mongodb.client.FindIterable;
 import org.bson.Document;
 
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -60,7 +61,7 @@ public class Ranker {
     private final int weightFactor = 1;
     private final int ITFFactor = 10;
     private final int completeSentenceFactor = 4;
-    Ranker(String sentB) {
+    public Ranker(String sentB) {
         this.sentenceAfterProcessing = sentB;
         //this.sentencebeforeProcessing=sentB;
         out.println("going to db");
@@ -79,7 +80,7 @@ public class Ranker {
 
 //        for(int i=0;i<sentenceAfterProcessing.size();i++){
         for(String word : this.sentenceAfterProcessing.replaceAll("\"" , "").split(" ")){
-            if(StopWords.isNotAStopWord(word)) {
+            if(StopWords.isNotAStopWord(word)&& !word.equals("")) {
                 word = Stemmer.getStemmedString(word);
                 FindIterable<Document> it = this.db.retreiveDataFromIndexerByWord(word);
                 ArrayList<singleURL> wordURLS = new ArrayList<>();
@@ -175,9 +176,12 @@ public class Ranker {
     };
     int getBestBlainTextIndex(String url)
     {
-        if(URLS.get(url) == null || URLS.get(url).words == null || URLS.get(url).words.size() == 0 ||URLS.get(url).words.get(0)== null)
+
+        if(URLS.get(url) == null || URLS.get(url).words == null || URLS.get(url).words.size() == 0 )
             return 0;
-        return URLS.get(url).words.get(0).occursAt.get(0);
+//        out.println("C " + URLS.get(url).words.get(0).occursAt);
+        HashMap<String , wordInfo> words = URLS.get(url).words;
+        return words.values().stream().toList().get(0).occursAt.get(0);
     }
     public List<rankerReturn> getRankedURLS()
     {
@@ -188,12 +192,19 @@ public class Ranker {
         String url = urlInfo.url;
         if (!URLS.containsKey(url))
             URLS.put(url, new URLWordsAndSentences());
-        URLS.get(url).words.put(word, new wordInfo(urlInfo.occursAt , urlInfo.weight , urlInfo.itf));
+        out.println("adding....................");
+        wordInfo lword = new wordInfo(urlInfo.occursAt , urlInfo.weight, urlInfo.itf);
+        if(lword == null)
+            out.println("NULL");
+
+        URLS.get(url).words.put(word, lword);
+
     }
     void addURLInfo(String word)
     {
         if(!allData.containsKey(word))
             return;
+        out.println("adding.....");
         for (singleURL urlInfo : allData.get(word)) addSingleURLInfo(urlInfo , word);
     }
     void addURLSData()
@@ -227,11 +238,12 @@ public class Ranker {
         completeSentences.forEach(completeSentencesConsumer);
     }
 
-//    public static void main(String[] args){
-//        String s="football";
-//        Ranker ranker = new Ranker(s);
-//        List<rankerReturn> urls =  ranker.getRankedURLS();
-//
+    public static void main(String[] args){
+        String s="kell";
+        Ranker ranker = new Ranker(s);
+        List<rankerReturn> urls =  ranker.getRankedURLS();
+        out.println(urls.get(0).plaintTextIndex);
 //        out.println(urls);
-//    }
+
+    }
 }

@@ -17,7 +17,6 @@ public class WebCrawlerMain {
         if(pageCount>=5000||pageCount==0){
             //means that the last crawling completed sucessfully
             pageCount=0;
-
             seedSet=new ArrayList<String>();
             seedSet.add("https://www.wikipedia.org/");
             seedSet.add("https://www.youm7.com/");
@@ -25,7 +24,6 @@ public class WebCrawlerMain {
             seedSet.add ("https://technicalseo.com/");
             seedSet.add("https://www.facebook.com/");
             seedSet.add("https://www.javatpoint.com/");
-            seedSet.add("https://www.w3schools.com/");
             seedSet.add("https://www.filgoal.com/");
             seedSet.add("https://www.fcbarcelona.com/");
             WebCrawlerDb.InsertLinks(seedSet);

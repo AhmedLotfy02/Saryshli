@@ -3,12 +3,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
-import java.io.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import javax.servlet.*;
 import javax.servlet.http.*;
 public class FrontEndHandler extends HttpServlet{
     public FrontEndHandler(){
@@ -23,13 +20,16 @@ public class FrontEndHandler extends HttpServlet{
 
         for(int i=0;i<rankerReturn.size();i++){
             String f="";
+            rankerReturn.get(i).url =     rankerReturn.get(i).url.startsWith("http") ?     rankerReturn.get(i).url : "https://" +     rankerReturn.get(i).url;
+
             Connection con = Jsoup.connect(rankerReturn.get(i).url);
             Document doc = con.get();
             String text = doc.select("*").text();
-            int end= rankerReturn.get(i).plaintTextIndex+300;
-            for(int j = rankerReturn.get(i).plaintTextIndex; j<=end; j++){
-                f+=text.charAt(j);
-            }
+            int startIndex= rankerReturn.get(i).plaintTextIndex;
+            f = text.substring(startIndex , startIndex + 300);
+//            f = "" + startIndex;
+            //f = "hello world";
+
             ResultStructure r1=new ResultStructure(rankerReturn.get(i).url,doc.title(),f);
             results.add(r1);
         }
