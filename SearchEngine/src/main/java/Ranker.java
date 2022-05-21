@@ -39,6 +39,7 @@ class URLWordsAndSentences
 {
     HashMap<String , wordInfo> words;
     Integer numOfCompleteSentences;
+    Integer popularity;
     URLWordsAndSentences()
     {
         numOfCompleteSentences = 0;
@@ -56,31 +57,34 @@ public class Ranker {
     private String sentenceAfterProcessing;
 
     public HashMap<String, ArrayList<singleURL>> allData;
-    public HashMap<String , URLWordsAndSentences> URLS;
+    public HashMap<String, URLWordsAndSentences> URLS;
     private final int wordCountFactor = 7;
     private final int weightFactor = 1;
     private final int ITFFactor = 10;
     private final int completeSentenceFactor = 4;
-    public Ranker(String sentB) {
+    private int page;
+
+    Ranker(String x) {
+    }
+
+    public Ranker(String sentB, int page) {
+        this.page = page;
         this.sentenceAfterProcessing = sentB;
-        //this.sentencebeforeProcessing=sentB;
-        out.println("going to db");
         this.db = new DatabaseClass();
-        out.println("connected db");
         this.allData = new HashMap<>();
         this.Stemmer = new Stemming();
-        this.StopWords = new RemoveStopWord(127 , "./src/stopWords.txt");
+        this.StopWords = new RemoveStopWord(127, "./src/stopWords.txt");
         retrieveDataFromDB();
         filterToGetMostCommonWords();
     }
 
 
-    public void retrieveDataFromDB(){
+    public void retrieveDataFromDB() {
         this.db.specifyDB("IndexerDB");
 
 //        for(int i=0;i<sentenceAfterProcessing.size();i++){
-        for(String word : this.sentenceAfterProcessing.replaceAll("\"" , "").split(" ")){
-            if(StopWords.isNotAStopWord(word)&& !word.equals("")) {
+        for (String word : this.sentenceAfterProcessing.replaceAll("\"", "").split(" ")) {
+            if (StopWords.isNotAStopWord(word) && !word.equals("")) {
                 word = Stemmer.getStemmedString(word);
                 FindIterable<Document> it = this.db.retreiveDataFromIndexerByWord(word);
                 ArrayList<singleURL> wordURLS = new ArrayList<>();
@@ -95,97 +99,115 @@ public class Ranker {
 
     }
 
-    ArrayList<String> getCompleteSentences()
-    {
+    ArrayList<String> getCompleteSentences() {
         ArrayList<String> matchingStrings = new ArrayList<>();
         Matcher m = Pattern.compile("\"([^\"]*)\"").matcher(sentenceAfterProcessing);
-        while(m.find()){
+        while (m.find()) {
             matchingStrings.add(m.group(1));
         }
 
         return matchingStrings;
     }
 
-    void fillQueue(Queue<Integer> q , String firstWord , String url )
-    {
+    void fillQueue(Queue<Integer> q, String firstWord, String url) {
         Integer addedLength = firstWord.length() + 1;
         firstWord = Stemmer.getStemmedString(firstWord);
-        if(URLS.get(url).words.get(firstWord) == null)
+        if (URLS.get(url).words.get(firstWord) == null)
             return;
-        for(Integer x : URLS.get(url).words.get(firstWord).occursAt)
+        for (Integer x : URLS.get(url).words.get(firstWord).occursAt)
             q.add(x + addedLength);
     }
-    Queue<Integer> changeQueue(Queue<Integer> q, String stopWord , String url)
-    {
+
+    Queue<Integer> changeQueue(Queue<Integer> q, String stopWord, String url) {
         Integer addedLength = stopWord.length() + 1;
         Queue<Integer> newQueue = new LinkedList<>();
-        while(!q.isEmpty())
-        {
+        while (!q.isEmpty()) {
             int top = q.peek();
             q.remove();
             newQueue.add(top + addedLength);
         }
         return newQueue;
     }
-    Queue<Integer> filterQueue(Queue<Integer> q , String word , String url)
-    {
+
+    Queue<Integer> filterQueue(Queue<Integer> q, String word, String url) {
         Integer addedLength = word.length() + 1;
         Queue<Integer> newQueue = new LinkedList<>();
         word = Stemmer.getStemmedString(word);
-        if(URLS.get(url).words.get(word) == null)
+        if (URLS.get(url).words.get(word) == null)
             return newQueue;
-        for(Integer x : URLS.get(url).words.get(word).occursAt)
-        {
+        for (Integer x : URLS.get(url).words.get(word).occursAt) {
             Integer top = q.peek();
-            if(top == null) {
-                return newQueue;}
-            if(top.equals(x)) {
+            if (top == null) {
+                return newQueue;
+            }
+            if (top.equals(x)) {
                 q.remove();
                 newQueue.add(top + addedLength);
             }
-            if(top.compareTo(x) < 0) // less than
+            if (top.compareTo(x) < 0) // less than
                 q.remove();
         }
         return newQueue;
     }
-    Integer containsCompleteSentence(String url , String sentence) {
+
+    Integer containsCompleteSentence(String url, String sentence) {
         Queue<Integer> q = new LinkedList<>();
         String[] sentenceWords = sentence.split(" ");
         int i = 0;
         int size = sentenceWords.length;
-        while(i < size  && !StopWords.isNotAStopWord(sentenceWords[i++]));
-        if(i == size) return 0;
-        fillQueue(q , sentenceWords[i++] , url );
-        for(; i < sentenceWords.length ; i++)
-        {
-            if(StopWords.isNotAStopWord(sentenceWords[i])) {
+        while (i < size && !StopWords.isNotAStopWord(sentenceWords[i++])) ;
+        if (i == size) return 0;
+        fillQueue(q, sentenceWords[i++], url);
+        for (; i < sentenceWords.length; i++) {
+            if (StopWords.isNotAStopWord(sentenceWords[i])) {
                 q = filterQueue(q, sentenceWords[i], url);
-            }
-            else
+            } else
                 q = changeQueue(q, sentenceWords[i], url);
         }
         return q.size();
     }
+
     Consumer<String> completeSentencesConsumer = sentence -> {
-        for(String url : URLS.keySet())
-        {
-            Integer occur = containsCompleteSentence(url , sentence);
+        for (String url : URLS.keySet()) {
+            Integer occur = containsCompleteSentence(url, sentence);
             URLS.get(url).numOfCompleteSentences += occur;
             out.println(occur);
         }
     };
-    int getBestBlainTextIndex(String url)
-    {
 
-        if(URLS.get(url) == null || URLS.get(url).words == null || URLS.get(url).words.size() == 0 )
+    int getBestBlainTextIndex(String url) {
+
+        if (URLS.get(url) == null || URLS.get(url).words == null || URLS.get(url).words.size() == 0)
             return 0;
 //        out.println("C " + URLS.get(url).words.get(0).occursAt);
-        HashMap<String , wordInfo> words = URLS.get(url).words;
+        HashMap<String, wordInfo> words = URLS.get(url).words;
         return words.values().stream().toList().get(0).occursAt.get(0);
     }
-    public List<rankerReturn> getRankedURLS()
+
+    private int getFromPage() {
+        int startPage = (this.page - 1) * 10;
+        return startPage >= URLS.size() ? -1 : startPage;
+    }
+
+    private int getToPage() {
+        int endPage = (this.page * 10);
+        return Math.min(endPage, URLS.size());
+    }
+
+    public List<rankerReturn> getURLS() {
+        int start = getFromPage();
+        if (start == -1)
+            return new ArrayList<>();
+        int end = getToPage();
+        out.println(start + " " + end);
+        return URLS.entrySet().stream().sorted(sortingComparator)
+                .toList().subList(start, end).stream()
+                .map(s -> s.getKey()).map(url -> new rankerReturn(url, getBestBlainTextIndex(url))).toList();
+    }
+
+    public paginationRanker getRankedURLS()
     {
-        return URLS.entrySet().stream().sorted(sortingComparator).map(s -> s.getKey()).map(url -> new rankerReturn(url , getBestBlainTextIndex(url))).toList();
+        return new paginationRanker(getURLS() , URLS.size());
     }
     void addSingleURLInfo(singleURL urlInfo , String word )
     {
@@ -212,14 +234,18 @@ public class Ranker {
         for(String word : this.sentenceAfterProcessing.replaceAll("\"" , "").split(" ")) {
             if(StopWords.isNotAStopWord(word)) addURLInfo(Stemmer.getStemmedString(word));
         }
+//        db.f();
+        out.println(db.getUrlsPopularity(URLS.keySet().stream().toList()).first());
     }
     Integer getTotalWeight(Map.Entry<String, URLWordsAndSentences> o)
     {
+        int popularityFactor = 10;
         HashMap<String , wordInfo> words = o.getValue().words;
         Integer numOfCompleteSentences = o.getValue().numOfCompleteSentences;
+        Integer popularity = o.getValue().popularity;
         int weight = words.values().stream().map(s -> s.weight).reduce(0 , (a , c) -> a + c);
         double itf = words.values().stream().map(s -> s.itf).reduce(0.0 , (a , c) -> a + c);
-        Integer res =  weightFactor * weight + wordCountFactor * words.size() + completeSentenceFactor * numOfCompleteSentences + (int)(ITFFactor * itf);
+        Integer res =  weightFactor * weight + wordCountFactor * words.size() + completeSentenceFactor * numOfCompleteSentences + (int)(ITFFactor * itf) + popularity * popularityFactor;
         return res;
     }
     private Comparator<Map.Entry<String , URLWordsAndSentences>> sortingComparator =
@@ -238,11 +264,15 @@ public class Ranker {
         completeSentences.forEach(completeSentencesConsumer);
     }
 
+
     public static void main(String[] args){
-        String s="kell";
-        Ranker ranker = new Ranker(s);
-        List<rankerReturn> urls =  ranker.getRankedURLS();
-        out.println(urls.get(0).plaintTextIndex);
+        String s="question";
+        Ranker ranker = new Ranker(s , 1);
+        paginationRanker pR =  ranker.getRankedURLS();
+        List<rankerReturn> urls = pR.urls;
+        out.println(urls);;
+//        out.println(urls.subList(0 , 1));
+//        out.println(urls.get(0).plaintTextIndex);
 //        out.println(urls);
 
     }

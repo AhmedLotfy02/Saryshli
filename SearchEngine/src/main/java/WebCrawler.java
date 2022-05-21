@@ -310,41 +310,6 @@ public class WebCrawler implements Runnable {
 
         return true;
     }
-//    private void deepCrawl(Element link) throws IOException {
-//        String nextLink = link.absUrl("href");
-//        synchronized (this){links.add(nextLink);}
-//        crawl();
-//    }
-//
-//    private void extractLinks(Document doc) throws IOException {
-//        for (Element link : doc.select("a[href]")) {
-//            deepCrawl(link);
-//        }
-//    }
-//    private void saveDocument(Document doc) throws IOException {
-//        String cs = createCS(doc);
-//        if(!existCS(cs)) {
-//            addCS(cs);
-//            extractLinks(doc);
-//        }
-//    }
-//    private void crawl() throws IOException {
-//        if (pagesCount >= MAX_PAGES) return;
-//        System.out.println(Thread.currentThread().getId());
-//        String url = "";
-//        synchronized (this){
-//            if(!links.isEmpty())
-//                url = links.remove();
-//        }
-//       // Document doc = request(url);
-//        synchronized (this) {
-//            Integer val = popularity.get(url);
-//            if(val != null)
-//                popularity.put(url, val + 1);
-//            else popularity.put(url, 1);
-//        }
-//       // if(doc != null ) saveDocument(doc);
-//    }
 
 
     private String createCS(Document doc) throws IOException {
@@ -352,17 +317,6 @@ public class WebCrawler implements Runnable {
         String cs = computeCompactString(elements);
         return cs;
     }
-//    private boolean existCS(String cs)
-//    {
-//        return compactStrings.contains(cs);
-//    }
-//    private void addCS(String cs) {
-//        synchronized (this) {
-//            pagesCount++;
-//            System.out.println("thread id : " + Thread.currentThread().getId() + " page counts: " + pagesCount);
-//        }
-//        compactStrings.add(cs);
-//    }
 
 
     private String computeCompactString(Elements elements) {
@@ -383,6 +337,9 @@ public class WebCrawler implements Runnable {
         }
         return cs;
     }
+    // 341
+    // 42
+    // 6:47
 
     private ResponseContent request(String url) {
 

@@ -4,24 +4,47 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import javax.servlet.http.*;
 public class FrontEndHandler extends HttpServlet{
     public FrontEndHandler(){
     }
+    String getSentence(String x)
+    {
+        String result = "";
+        for(String s : x.split(" "))
+        {
+            result += (s + "+");
+        }
+        if(result.length() == 0)
+            return result;
+        return result.substring(0 , x.length());
+    }
     public void doGet(HttpServletRequest request,HttpServletResponse response) throws IOException {
         String sentence=request.getParameter("SearchSentenceInput");
-        System.out.println(sentence);
+        String pageNumString = request.getParameter("page");
+        Integer pageNum;
+        if(pageNumString == null)
+            pageNum =1 ;
+        else
+            pageNum = Integer.parseInt(request.getParameter("page"));
 
-        Ranker ranker=new Ranker(sentence);
-        List<rankerReturn> rankerReturn=ranker.getRankedURLS();
+        // String sentence = "question";
+        Ranker ranker=new Ranker(sentence , pageNum);
+        paginationRanker rankerResult = ranker.getRankedURLS();
+        Integer size = rankerResult.size;
+        List<rankerReturn> rankerReturn= rankerResult.urls;
         ArrayList<ResultStructure> results=new ArrayList<>();
+//        for(rankerReturn r : rankerResults)
+//        {
+//            results.add(new ResultStructure(r.url , "assad" , "asaad"));
+//        }
 
         for(int i=0;i<rankerReturn.size();i++){
             String f="";
             rankerReturn.get(i).url =     rankerReturn.get(i).url.startsWith("http") ?     rankerReturn.get(i).url : "https://" +     rankerReturn.get(i).url;
-
             Connection con = Jsoup.connect(rankerReturn.get(i).url);
             Document doc = con.get();
             String text = doc.select("*").text();
@@ -94,6 +117,9 @@ public class FrontEndHandler extends HttpServlet{
                 "            padding: 20px;\n" +
                 "            padding-left: 0;\n" +
                 "        }\n" +
+                ".pagination__container{display: flex;width: 100%;align-items: center;}" +
+                ".pagination{margin: auto;display: flex;font-size: 30px;column-gap: 8px;-ms-flex-align: center;}" +
+                ".currentPage{color : red;}"+
                 "    </style>\n" +
                 "    \n" +
                 "    <title>" + sentence + "</title>\n" +
@@ -158,8 +184,13 @@ public class FrontEndHandler extends HttpServlet{
         }
         page +=
                 "        </div>\n" +
+                       " <div class=\"pagination__container\"> <div class=\"pagination\"></div> </div>"+
                         "\n" +
                         "        <script>\n" +
+                        "const paginationLinks = document.querySelector('.pagination')\n" +
+                        " for(let i = 1 ; i <= " + ((size + 9) / 10) + "; i++) {\n" +
+                         " console.log('15');\n" +
+                        "paginationLinks.insertAdjacentHTML(\"beforeend\" , `<a ${i ==" + pageNum + " ? \"class=\\\"currentPage\\\"\" : \"\"} href=\"http://localhost:8080/SearchSentence?SearchSentenceInput=" + getSentence(sentence) + "&page=${i}\">${i}</a>`)}\n"+
                         "            $(document).ready(function() {\n" +
                         "            // executes when HTML-Document is loaded and DOM is ready\n" +
                         "            console.log(\"document is ready\");\n" +
@@ -237,8 +268,13 @@ public class FrontEndHandler extends HttpServlet{
                         "    </body>\n" +
                         "\n" +
                         "</html>";
+        System.out.println(page);
         response.getWriter().println(page);
     }
+
+//    public static void main(String[] args) {
+//        FrontEndHandler f = new FrontEndHandler();
+//    }
 }
 
 
