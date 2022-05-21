@@ -70,7 +70,7 @@ public class Ranker {
 
     public Ranker(String sentB, int page) {
         this.page = page;
-        this.sentenceAfterProcessing = sentB;
+        this.sentenceAfterProcessing = sentB.toLowerCase();
         this.db = new DatabaseClass();
         this.allData = new HashMap<>();
         this.Stemmer = new Stemming();

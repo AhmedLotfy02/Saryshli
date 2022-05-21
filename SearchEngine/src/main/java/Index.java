@@ -47,6 +47,7 @@ public class Index implements Runnable {
     {
         word = word.trim();
         word = word.replaceAll("[&\\/#,+()$~%.'\":#?<>{}_@]","");
+        word = word.toLowerCase();
         if(word.length() == 0 || !StopWords.isNotAStopWord(word))
             return;
         word = Stemmer.getStemmedString(word);

@@ -78,7 +78,7 @@ public class FrontEndHandler extends HttpServlet{
                 "<html>\n" +
                 "    <head>\n" +
                 "    <!-- for the browser icon -->\n" +
-                "    <link rel=\"icon\" href=\"https://cdn2.iconfinder.com/data/icons/social-icons-33/128/Google-512.png\">\n" +
+                "    <link rel=\"icon\" href=\"https://freeiconshop.com/wp-content/uploads/edd/search-var-flat.png\">\n" +
                 "    <!-- for bootstrap -->\n" +
                 "    <meta charset=\"utf-8\">\n" +
                 "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" +
@@ -90,8 +90,13 @@ public class FrontEndHandler extends HttpServlet{
                 "    <style>\n" +
                 "        body {\n" +
                 "            padding: 0%;\n" +
+                "            padding-top: 7px;\n" +
                 "        }\n" +
                 "\n" +
+                    ".line-seperate{margin-top:0px;}\n"
+                    +
+                        ".btn-primary{margin-left:6px;}\n"
+                    +
                 "        .upper-part{\n" +
                 "            padding-right: 5%;\n" +
                 "            padding-left: 5%;\n" +
@@ -100,10 +105,12 @@ public class FrontEndHandler extends HttpServlet{
                 "        .list-results{\n" +
                 "            padding: 5%;\n" +
                 "            padding-top: 0%;\n" +
+                "            margin-top: 0;\n" +
                 "        }\n" +
                 "\n" +
                 "        .result-item{\n" +
                 "            padding: 20px;\n" +
+                "            padding-top: 0;\n" +
                 "        }\n" +
                 "\n" +
                 "        .left-part{ \n" +
@@ -117,13 +124,17 @@ public class FrontEndHandler extends HttpServlet{
                 "\n" +
                 "        #google-logo{\n" +
                 "            float: left;\n" +
-                "            width: 120px;\n" +
+                "            width: 160px;\n" +
                 "            padding: 20px;\n" +
+                "            padding-top: 25px;\n" +
                 "            padding-left: 0;\n" +
                 "        }\n" +
-                ".pagination__container{display: flex;width: 100%;align-items: center;}" +
+                "        .form-control{max-width:50%;}\n"+
+                ".pagination__container{display: flex;position:absolute;bottom:1rem;width: 100%;align-items: center;}" +
                 ".pagination{margin: auto;display: flex;font-size: 30px;column-gap: 8px;-ms-flex-align: center;}" +
-                ".currentPage{color : red;}"+
+                ".currentPage{color : white;background-color: #eee;color:black;" +
+                "width:40px;height:45px;text-align:center;border-radius:50%;" +
+                "}\n"+
                 "    </style>\n" +
                 "    \n" +
                 "    <title>" + sentence + "</title>\n" +
@@ -133,7 +144,7 @@ public class FrontEndHandler extends HttpServlet{
                 "        <div class=\"upper-part\">\n" +
                 "            <!-- left part -->\n" +
                 "            <div class=\"left-image\">\n" +
-                "                <img id=\"google-logo\" src=\"https://i.ibb.co/pRTtmmZ/Search-Engine-2.png\">\n" +
+                "                <img id=\"google-logo\" src=\"https://i.ibb.co/gJMdnzH/Search-Engine-2-removebg-preview-1.png\">\n" +
                 "            </div>\n" +
                 "\n" +
                 "<!-- right part -->\n" +
@@ -144,21 +155,16 @@ public class FrontEndHandler extends HttpServlet{
                 "                        <div class=\"form-group mx-sm-3 mb-2\">\n" +
                 "                          <label for=\"inputText2\" class=\"sr-only\">Search</label>\n" +
                 "                          <input type=\"text\" class=\"form-control shadows\" id=\"inputText2\" placeholder=\"\" name=\"SearchSentenceInput\" style=\"width: 1000px;\" value=\"" + sentence + "\">\n" +
+
+                "                        <input type=\"submit\" class=\"btn btn-primary\" name=\"SearchInput\" id=\"SearchInput\" value=\"Search\" />\n" +
+
+
                 "                          <div class=\"input-group-prepend\">\n" +
                 "                          </div>\n" +
                 "                        </div>\n" +
-                "                        <input type=\"submit\" class=\"btn btn-primary mb-2\" name=\"SearchInput\" id=\"SearchInput\" value=\"Search\" />\n" +
                 "\n" +
                 "                        <!-- voice recognition button -->\n" +
-                "                        <button type=\"submit\" class=\"btn btn-primary mb-2\" id=\"voiceButton\" title=\"requires chrome and mic access\" style=\"margin-left: 2px;\">Voice Search</button>\n" +
                 "                        <!-- options buttons -->\n" +
-                "                        <div class=\"options-buttons\">\n" +
-                "                            <input type=\"submit\" class=\"btn btn-link\" name=\"AllInput\" id=\"AllInput\" value='All'/>\n" +
-                "                            <input type=\"submit\" class=\"btn btn-link\" name=\"ImagesInput\" id=\"ImagesInput\" value='Images'/>\n" +
-                "                            <button type=\"button\" class=\"btn btn-link\"><i class=\"fas fa-caret-right-square\"></i> Videos</button>\n" +
-                "                            <button type=\"button\" class=\"btn btn-link\"><i class=\"fas fa-newspaper\"></i> News</button>\n" +
-                "                            <button type=\"button\" class=\"btn btn-link\"><i class=\"fas fa-book\"></i> Books</button>\n" +
-                "                        </div>\n" +
                 "                    </form>\n" +
                 "                </div>\n" +
                 "            </div>\n" +
@@ -167,7 +173,7 @@ public class FrontEndHandler extends HttpServlet{
                 "\n" +
                 "        </div>\n" +
                 "        <br>\n" +
-                "        <hr class=\"style17\">" +
+                "        <hr class=\"style17 line-seperate\">" +
                 "\n" +
                 "        <div class=\"list-results\">\n" +
                 "            <p class=\"text-muted\" style=\"padding-left: 20px;\">About  " + results.size() + " results</p>\n";
