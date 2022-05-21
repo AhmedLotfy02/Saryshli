@@ -20,7 +20,7 @@ public class WebCrawler implements Runnable {
     private static final int MAX_PAGES = 100;
     private static int pagesCount = 0;
     private Thread[] threads;
-    HashMap<String , Integer> popularity = new HashMap<String, Integer>();
+    HashMap<DataStructures , Integer> popularity = new HashMap<DataStructures, Integer>();
     private ArrayList<String> visitedLinks = new ArrayList<String>();
     private ArrayList<String> compactStrings = new ArrayList<>();
      LinkedList<String> links = new LinkedList<String>();
@@ -41,6 +41,7 @@ public class WebCrawler implements Runnable {
     public void run() {
         String link;
         while(crawledPages<=5000) {
+            System.out.println(crawledPages);
             link = fetchLink();//this function already has synchronization as it access the queue
             boolean checkTheRobot=false;
             try {
@@ -65,13 +66,55 @@ public class WebCrawler implements Runnable {
                         Document doc=responseReturn.getDocument();
                         synchronized (this) {
                             this.CrawlerDB.storeOneCrawlerResult(doc.title(), cs, link);
-                        }
-                        //lets bfs on the hyperlinks
-                        Elements hL=doc.select("a[href]");
-                        hyperLinks=new ArrayList<>();
+                            DataStructures d1;
+                            try {
+                                d1=new DataStructures(new URL(link),cs,null);
+                            } catch (MalformedURLException e) {
+                                throw new RuntimeException(e);
+                            }
+                            this.popularity.put(d1, 0);
 
-                        for(Element hLink:hL){
-                            hyperLinks.add(hLink.absUrl("href"));
+                            //lets bfs on the hyperlinks
+                            Elements hL = doc.select("a[href]");
+                            hyperLinks = new ArrayList<>();
+
+                            for (Element hLink : hL) {
+                                boolean found=false;
+                                String newHyperLink=hLink.absUrl("href");
+                                DataStructures d2;
+                                int oldvalue=0;
+                                for(Map.Entry<DataStructures,Integer> e:this.popularity.entrySet()){
+                                    if(e.getKey().url.equals(newHyperLink)){
+                                        found=true;
+                                        oldvalue=e.getValue();
+                                        break;
+                                    }
+                                }
+                                if(found){
+
+                                    int oldValue = oldvalue;
+                                    try {
+                                        d2=new DataStructures(new URL(newHyperLink),cs,null);
+                                    } catch (MalformedURLException e) {
+                                        throw new RuntimeException(e);
+                                    }
+
+                                    this.popularity.replace(d2, oldValue, ++oldValue);
+
+                                }
+                                else{
+                                    try {
+                                         d2=new DataStructures(new URL(newHyperLink),cs,null);
+                                        this.popularity.put(d2, 0);
+
+                                    } catch (MalformedURLException e) {
+                                      System.out.println("Cannot connect to hyperlink: "+ link);
+                                    }
+
+                                }
+
+                                hyperLinks.add(newHyperLink);
+                            }
                         }
                         synchronized (this){
                             if(crawledPages==5000){
@@ -267,41 +310,6 @@ public class WebCrawler implements Runnable {
 
         return true;
     }
-//    private void deepCrawl(Element link) throws IOException {
-//        String nextLink = link.absUrl("href");
-//        synchronized (this){links.add(nextLink);}
-//        crawl();
-//    }
-//
-//    private void extractLinks(Document doc) throws IOException {
-//        for (Element link : doc.select("a[href]")) {
-//            deepCrawl(link);
-//        }
-//    }
-//    private void saveDocument(Document doc) throws IOException {
-//        String cs = createCS(doc);
-//        if(!existCS(cs)) {
-//            addCS(cs);
-//            extractLinks(doc);
-//        }
-//    }
-//    private void crawl() throws IOException {
-//        if (pagesCount >= MAX_PAGES) return;
-//        System.out.println(Thread.currentThread().getId());
-//        String url = "";
-//        synchronized (this){
-//            if(!links.isEmpty())
-//                url = links.remove();
-//        }
-//       // Document doc = request(url);
-//        synchronized (this) {
-//            Integer val = popularity.get(url);
-//            if(val != null)
-//                popularity.put(url, val + 1);
-//            else popularity.put(url, 1);
-//        }
-//       // if(doc != null ) saveDocument(doc);
-//    }
 
 
     private String createCS(Document doc) throws IOException {
@@ -309,17 +317,6 @@ public class WebCrawler implements Runnable {
         String cs = computeCompactString(elements);
         return cs;
     }
-//    private boolean existCS(String cs)
-//    {
-//        return compactStrings.contains(cs);
-//    }
-//    private void addCS(String cs) {
-//        synchronized (this) {
-//            pagesCount++;
-//            System.out.println("thread id : " + Thread.currentThread().getId() + " page counts: " + pagesCount);
-//        }
-//        compactStrings.add(cs);
-//    }
 
 
     private String computeCompactString(Elements elements) {
@@ -340,6 +337,9 @@ public class WebCrawler implements Runnable {
         }
         return cs;
     }
+    // 341
+    // 42
+    // 6:47
 
     private ResponseContent request(String url) {
 
@@ -372,7 +372,13 @@ public class WebCrawler implements Runnable {
 
     }
 
-//    public Thread getThread() {
+    @Override
+    public void finalize() throws Throwable {
+        this.CrawlerDB.updatePopularity(popularity);
+    }
+
+
+    //    public Thread getThread() {
 //        return thread;
 //    }
 }

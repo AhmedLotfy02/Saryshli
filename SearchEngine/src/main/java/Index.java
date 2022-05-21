@@ -7,7 +7,7 @@ import com.mongodb.client.FindIterable;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-public class Index {
+public class Index implements Runnable {
     private  DatabaseClass db;
     RemoveStopWord StopWords;
     boolean isSpam;
@@ -29,6 +29,11 @@ public class Index {
         }
     }
 
+    public void run(){
+
+
+
+    }
     public String extractStartOfTheLastWord(String sentence)
     {
         sentence = sentence.trim();
@@ -41,7 +46,8 @@ public class Index {
     private void processWord(int start,Hashtable<String, Pair_Data> databaseWordsFromString,int weight,String word,boolean addToDocument)
     {
         word = word.trim();
-        if(word.length() == 0)
+        word = word.replaceAll("[&\\/#,+()$~%.'\":#?<>{}_@]","");
+        if(word.length() == 0 || !StopWords.isNotAStopWord(word))
             return;
         word = Stemmer.getStemmedString(word);
         Pair_Data pd = databaseWordsFromString.get(word);
@@ -61,10 +67,10 @@ public class Index {
     }
     private void getWordsFromString(String sentence,Hashtable<String, Pair_Data> databaseWordsFromDocument,int weight,boolean addToDocument)
     {
-        String word= extractStartOfTheLastWord(sentence);
+        String LastWORD = extractStartOfTheLastWord(sentence);
+        String word;
         int n = sentence.length();
-        int end = sentence.length() - word.length();
-        processWord(end,databaseWordsFromDocument,weight,word,addToDocument);
+        int end = sentence.length() - LastWORD.length();
         int start = 0;
         for (int i = 0;i< end;i++){
             start = i;
@@ -77,6 +83,7 @@ public class Index {
             }
             processWord(start,databaseWordsFromDocument,weight,word,addToDocument);
         }
+        processWord(end,databaseWordsFromDocument,weight,LastWORD,addToDocument);
     }
     public void calcITF(Hashtable<String, Pair_Data> databaseWordsFromString)
     {
@@ -105,10 +112,6 @@ public class Index {
         for(int i = 1;i<7;i++)
             getWordsFromString(doc.select("h"+i).text(),databaseWordsFromDocument,8-i,false);
         this.db.store(databaseWordsFromDocument,url);
-//
-//        databaseWordsFromDocument.forEach((key,value)->{
-//            System.out.println(key+" : " + value.itf + " : "+ value.occursAt);
-//        });
     }
     public static void main(String[] args) throws IOException {
         //try
@@ -116,35 +119,33 @@ public class Index {
         DatabaseClass db=new DatabaseClass();
 
         Index myIndexer = new Index(db);
-     FindIterable<org.bson.Document>it= db.retreiveCrawledResult();
-       for(org.bson.Document doc:it)
-        for(Map.Entry<String,Object>e:doc.entrySet()){
-            if(e.getKey().equals("link")){
-                try{
+        FindIterable<org.bson.Document>it= db.retreiveCrawledResult();
+        ArrayList<String> urls=new ArrayList<>();
+        for(org.bson.Document doc:it)
+            for(Map.Entry<String,Object>e:doc.entrySet()){
+                if(e.getKey().equals("link")){
+                    try{
+//                        urls.add(e.getValue().toString());
+
                     System.out.println(e.getValue().toString());
 
                     Connection con = Jsoup.connect(e.getValue().toString());
                     Document doc1 = con.get();
                     myIndexer.indexing(doc1,e.getValue().toString());
+                    }
+                    catch (Exception e1){
+                        System.out.println("error happened while connecting to link : "+e.getKey()+" in indexer");
+                    }
+
+
+
+                    //System.out.println(e.getValue());
                 }
-                catch (Exception e1){
-                    System.out.println("error happened while connecting to link : "+e.getKey()+" in indexer");
-                }
-
-
-
-                //System.out.println(e.getValue());
             }
-        }
-//            Connection con = Jsoup.connect("https://www.wikipedia.org");
-//
-//
-//            Document doc = con.get();
-//            myIndexer.indexing(doc);
-        //}
-//        catch(IOException e)
-//        {
-//            System.out.println("hello");
-//        }
+
+        System.out.println(urls);
     }
+
+
+
 }

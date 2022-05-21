@@ -16,10 +16,12 @@ public class DatabaseClass {
     String uri="mongodb://ahmed2:bashera2@localhost";
     MongoDatabase db;
     MongoCollection collection;
-   // public DatabaseClass(int dummy){}
+    // public DatabaseClass(int dummy){}
     public DatabaseClass(){
+
         mongoclient= MongoClients.create(uri);
     }
+
 
     public void specifyDB(String desiredDatabase){
         this.db=mongoclient.getDatabase(desiredDatabase);
@@ -37,14 +39,20 @@ public class DatabaseClass {
         this.specifyCollection("CrawlerResult");
         FindIterable<Document> it=collection.find();
 
-    return it;
+        return it;
+    }
+    public FindIterable<Document> getUrlsPopularity(List<String> urls)
+    {
+        this.specifyDB("CrawlerDB1");
+        this.specifyCollection("CrawlerResult");
+        return collection.find(Filters.all("_id" , urls));
     }
     public boolean InsertLinks(ArrayList<String> links){
         try {
             if(db.listCollectionNames().equals("CrawlerResult")){
                 //delete crawled data to begin from new one
-               MongoCollection cRCollection=db.getCollection("CrawlerResult");
-               cRCollection.drop();
+                MongoCollection cRCollection=db.getCollection("CrawlerResult");
+                cRCollection.drop();
             }
             else{
                 System.out.println("First time to crawl");
@@ -65,10 +73,19 @@ public class DatabaseClass {
         return true;
     }
 
+    public boolean updatePopularity(HashMap<DataStructures,Integer> popularity){
+
+        MongoCollection CrawlerResult=db.getCollection("CrawlerResult");
+        for(Map.Entry<DataStructures,Integer>e:popularity.entrySet())
+            CrawlerResult.updateOne(Filters.eq("_id", e.getKey().CompactString), new Document("$set", new Document("popularity",e.getValue() )));
+
+
+        return true;
+    }
     public boolean storeOneCrawlerResult(String title,String CS,String link){
         MongoCollection CrawlerResult=db.getCollection("CrawlerResult");
         try {
-            BasicDBObject doc = new BasicDBObject("_id", CS).append("title", title).append("link",link);
+            BasicDBObject doc = new BasicDBObject("_id", CS).append("title", title).append("link",link).append("popularity",0);
             CrawlerResult.insertOne(new Document(doc.toMap()));
 
         }
@@ -114,7 +131,7 @@ public class DatabaseClass {
         FindIterable<Document> links= crawlerResultCollection.find(Filters.eq("_id",CS));
         if(links.first()!=null){
             System.out.println("Link is dup");
-             return false;
+            return false;
         }
         //FindIterable<Document> docs=crawlerResultCollection.find();
 //        for(Document doc:docs){
@@ -130,7 +147,7 @@ public class DatabaseClass {
 //                return false;
 //            }
 //        }
-      //  System.out.println("Link is not dup");
+        //  System.out.println("Link is not dup");
 
         return true;
     }
@@ -149,7 +166,7 @@ public class DatabaseClass {
         ArrayList<String> links=new ArrayList<String>();
         for(Document doc:docs){
             links.addAll((ArrayList<String>)doc.get("data"));
-          //  System.out.println(links);
+            //  System.out.println(links);
         }
         return links;
     }
@@ -170,7 +187,7 @@ public class DatabaseClass {
 
             int priority=e.getValue().occursAt.get(0);
             e.getValue().occursAt.subList(0,1).clear();
-           double itf=e.getValue().itf;
+            double itf=e.getValue().itf;
             BasicDBObject doc = new BasicDBObject("_id", url)
                     .append("priority", priority)
                     .append("occurs-at",e.getValue().occursAt)
