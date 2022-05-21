@@ -1,8 +1,14 @@
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
+import jdk.jfr.DataAmount;
 import org.bson.Document;
 
+import javax.print.Doc;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 
 public class DatabaseClass {
@@ -35,12 +41,11 @@ public class DatabaseClass {
 
         return it;
     }
-    public MongoIterable<Integer> getUrlsPopularity(List<String> urls)
+    public FindIterable<Document> getUrlsPopularity(List<String> urls)
     {
         this.specifyDB("CrawlerDB1");
         this.specifyCollection("CrawlerResult");
-        FindIterable<Document> it =  collection.find(Filters.all("_id" , urls));
-        return it.map(s -> (Integer) s.get("popularity"));
+        return collection.find(Filters.all("_id" , urls));
     }
     public boolean InsertLinks(ArrayList<String> links){
         try {

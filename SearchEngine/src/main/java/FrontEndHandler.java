@@ -49,8 +49,12 @@ public class FrontEndHandler extends HttpServlet{
             Document doc = con.get();
             String text = doc.select("*").text();
             int startIndex= rankerReturn.get(i).plaintTextIndex;
-            f = text.substring(startIndex , startIndex + 300);
-//            f = "" + startIndex;
+            if(text.length() < startIndex)
+                f = "";
+            else
+                f = text.substring(startIndex , Math.min(startIndex + 300 , text.length()));
+
+            //   f = "" + startIndex;
             //f = "hello world";
 
             ResultStructure r1=new ResultStructure(rankerReturn.get(i).url,doc.title(),f);
@@ -129,7 +133,7 @@ public class FrontEndHandler extends HttpServlet{
                 "        <div class=\"upper-part\">\n" +
                 "            <!-- left part -->\n" +
                 "            <div class=\"left-image\">\n" +
-                "                <img id=\"google-logo\" src=\"https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png\">\n" +
+                "                <img id=\"google-logo\" src=\"https://i.ibb.co/pRTtmmZ/Search-Engine-2.png\">\n" +
                 "            </div>\n" +
                 "\n" +
                 "<!-- right part -->\n" +

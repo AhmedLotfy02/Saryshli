@@ -1,11 +1,24 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Map;
+
+import com.mongodb.client.FindIterable;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+public class Index implements Runnable {
+    private  DatabaseClass db;
+    RemoveStopWord StopWords;
+    boolean isSpam;
+    private int words_counter;
+    Stemming Stemmer ;
 
-public class Index {
+    public Index(DatabaseClass db){
+        this.db=db;
+        StopWords= new RemoveStopWord(127,"./src/stopWords.txt");
+        Stemmer= new Stemming();
+    }
     public class Pair_Data
     {
         public double itf;
@@ -16,10 +29,11 @@ public class Index {
         }
     }
 
-    RemoveStopWord StopWords = new RemoveStopWord(127,"./src/stopWords.txt");
-    boolean isSpam;
-    private int words_counter;
-    Stemming Stemmer = new Stemming();
+    public void run(){
+
+
+
+    }
     public String extractStartOfTheLastWord(String sentence)
     {
         sentence = sentence.trim();
@@ -32,10 +46,8 @@ public class Index {
     private void processWord(int start,Hashtable<String, Pair_Data> databaseWordsFromString,int weight,String word,boolean addToDocument)
     {
         word = word.trim();
-        word = word.replaceAll("[&\\/#,+()$~%.'\":*?<>{}_@]" , "");
-        if(word.length() == 0)
-            return;
-        if(!StopWords.isNotAStopWord(word))
+        word = word.replaceAll("[&\\/#,+()$~%.'\":#?<>{}_@]","");
+        if(word.length() == 0 || !StopWords.isNotAStopWord(word))
             return;
         word = Stemmer.getStemmedString(word);
         Pair_Data pd = databaseWordsFromString.get(word);
@@ -55,7 +67,7 @@ public class Index {
     }
     private void getWordsFromString(String sentence,Hashtable<String, Pair_Data> databaseWordsFromDocument,int weight,boolean addToDocument)
     {
-        String LastWORD= extractStartOfTheLastWord(sentence);
+        String LastWORD = extractStartOfTheLastWord(sentence);
         String word;
         int n = sentence.length();
         int end = sentence.length() - LastWORD.length();
@@ -84,8 +96,9 @@ public class Index {
             }
         });
     }
-    public void indexing(Document doc){
+    public void indexing(Document doc,String url){
         Hashtable<String, Pair_Data> databaseWordsFromDocument = new Hashtable<String,Pair_Data>();
+
         words_counter = 0;
         isSpam = false;
         getWordsFromString(doc.select("*").text(),
@@ -98,18 +111,41 @@ public class Index {
         }
         for(int i = 1;i<7;i++)
             getWordsFromString(doc.select("h"+i).text(),databaseWordsFromDocument,8-i,false);
+        this.db.store(databaseWordsFromDocument,url);
     }
     public static void main(String[] args) throws IOException {
-        try
-        {
-            Index myIndexer = new Index();
-            Connection con = Jsoup.connect("https://www.wikipedia.org");
-            Document doc = con.get();
-            myIndexer.indexing(doc);
-        }
-        catch(IOException e)
-        {
-            System.out.println("hello");
-        }
+        //try
+        //{
+        DatabaseClass db=new DatabaseClass();
+
+        Index myIndexer = new Index(db);
+        FindIterable<org.bson.Document>it= db.retreiveCrawledResult();
+        ArrayList<String> urls=new ArrayList<>();
+        for(org.bson.Document doc:it)
+            for(Map.Entry<String,Object>e:doc.entrySet()){
+                if(e.getKey().equals("link")){
+                    try{
+//                        urls.add(e.getValue().toString());
+
+                    System.out.println(e.getValue().toString());
+
+                    Connection con = Jsoup.connect(e.getValue().toString());
+                    Document doc1 = con.get();
+                    myIndexer.indexing(doc1,e.getValue().toString());
+                    }
+                    catch (Exception e1){
+                        System.out.println("error happened while connecting to link : "+e.getKey()+" in indexer");
+                    }
+
+
+
+                    //System.out.println(e.getValue());
+                }
+            }
+
+        System.out.println(urls);
     }
+
+
+
 }

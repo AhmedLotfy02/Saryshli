@@ -44,6 +44,7 @@ class URLWordsAndSentences
     {
         numOfCompleteSentences = 0;
         words = new HashMap<>();
+        this.popularity = 0;
     }
 }
 
@@ -235,7 +236,14 @@ public class Ranker {
             if(StopWords.isNotAStopWord(word)) addURLInfo(Stemmer.getStemmedString(word));
         }
 //        db.f();
-        out.println(db.getUrlsPopularity(URLS.keySet().stream().toList()).first());
+        FindIterable<Document> f =  db.getUrlsPopularity(URLS.keySet().stream().toList());
+        for(Document doc : f)
+        {
+            URLWordsAndSentences u = URLS.get(doc.get("_id"));
+            String p = (String)doc.get("popularity");
+            if(p != null)
+                u.popularity = Integer.parseInt(p);
+        }
     }
     Integer getTotalWeight(Map.Entry<String, URLWordsAndSentences> o)
     {
